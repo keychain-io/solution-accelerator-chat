@@ -1,0 +1,4 @@
+<resources>
+    <string name="environment_label">TEST</string>
+    <string name="service_name">Account TEST</string>
+</resources>

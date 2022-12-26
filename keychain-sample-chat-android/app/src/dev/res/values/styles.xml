@@ -1,0 +1,7 @@
+<resources>
+    <style name="EnvironmentLabelTheme" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">#35BFF3</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

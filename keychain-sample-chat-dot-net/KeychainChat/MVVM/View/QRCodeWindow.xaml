@@ -1,0 +1,99 @@
+﻿<Window x:Class="KeychainChat.MVVM.View.QRCodeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KeychainChat.MVVM.View"
+        xmlns:viewmodel="clr-namespace:KeychainChat.MVVM.ViewModel"
+        mc:Ignorable="d"
+        Background="#D9EAFC"
+        WindowStyle="None"
+        WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True"
+        Height="210" Width="300"
+        BorderBrush="Gray"
+        BorderThickness="1">
+
+    <Window.DataContext>
+        <viewmodel:PersonaViewModel/>
+    </Window.DataContext>
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.ColumnSpan="2"
+                Background="#252525"
+                MouseDown="Border_MouseDown">
+
+            <Grid HorizontalAlignment="Stretch">
+                <Label Content="Scan My QR Code"
+                       Foreground="White"
+                       FontWeight="SemiBold"/>
+
+                <StackPanel HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+
+                    <Button Width="20" Height="20"
+                            Content="❌"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="Gray"
+                            FontWeight="Bold"
+                            IsCancel="True"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <StackPanel HorizontalAlignment="Center"
+                    Grid.Row="1"
+                    Margin="10"
+                    Width="250">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="160"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.ColumnSpan="2"  
+                       Source="{Binding QRCodeImage}"
+                       Width="100"
+                       Height="100"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       RenderOptions.BitmapScalingMode="Fant"/>
+
+
+                <StackPanel Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    
+                    <Label VerticalAlignment="Center"
+                           Content="URI:"/>
+                    <TextBlock VerticalAlignment="Center"
+                               Text="{Binding PersonaUri}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Button Content="OK"
+                            Width="60"
+                            IsCancel="True"
+                            Focusable="False"/>
+                </StackPanel>
+
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

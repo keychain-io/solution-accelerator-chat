@@ -1,0 +1,19 @@
+﻿<Application x:Class="KeychainChat.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:KeychainChat"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="./Themes/UserCard.xaml"/>
+                <ResourceDictionary Source="./Themes/ContactCard.xaml"/>
+                <ResourceDictionary Source="./Themes/ChatItem.xaml"/>
+                <ResourceDictionary Source="./Themes/MessageBox.xaml"/>
+                <ResourceDictionary Source="./Themes/StylishScrollbar.xaml"/>
+                <ResourceDictionary Source="./Themes/CreatePersonaDialog.xaml"/>
+                <ResourceDictionary Source="./Themes/TransparentButton.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

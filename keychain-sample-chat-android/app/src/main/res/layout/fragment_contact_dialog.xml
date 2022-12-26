@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".views.TabbedActivity">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAlignment="center"
+        android:text="Modify Contact"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingVertical="6dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/renamePanel"
+        android:layout_width="233dp"
+        android:layout_height="233dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="84dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.376">
+
+        <TableLayout
+            android:id="@+id/namePanel"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.208">
+
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:text="@string/enter_name_prompt" />
+
+
+            </TableRow>
+
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:text="@string/last_name_prompt" />
+
+                <EditText
+                    android:id="@+id/lastNameEditTextPersona"
+                    android:layout_width="166dp"
+                    android:layout_height="wrap_content"
+                    android:width="200px"
+                    android:imeOptions="actionDone"
+                    android:inputType="textShortMessage"
+                    android:singleLine="true" />
+
+            </TableRow>
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="81dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:text="@string/first_name_prompt" />
+
+                <EditText
+                    android:id="@+id/firstNameEditTextPersona"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:width="200px"
+                    android:imeOptions="actionDone"
+                    android:inputType="textShortMessage"
+                    android:singleLine="true" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <Button
+            android:id="@+id/renameButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rename_label" />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/UriTextPersona"
+        android:layout_width="175dp"
+        android:layout_height="111dp"
+        android:layout_column="2"
+        android:layout_marginTop="52dp"
+        android:text="--"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/renamePanel" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="URI"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/renamePanel" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="environment_label">local</string>
+    <string name="service_name">Account LOCAL</string>
+    <string name="nfc_aid">A022222244</string>
+</resources>

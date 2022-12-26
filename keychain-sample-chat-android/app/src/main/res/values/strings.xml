@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">Keychain Chat</string>
+    <string name="hint_enter_a_message">Type your message</string>
+    <string name="action_settings">設定</string>
+    <string name="coin_name">JPY</string>
+    <string name="receive">受けとる</string>
+    <string name="send">送る</string>
+    <string name="send_to_qrcode">QR コードに送る</string>
+    <string name="wallet_header">おサイフ</string>
+    <string name="default_balance">0</string>
+    <string name="title_activity_persona">Keychain Wallet</string>
+
+    <string name="last_name_hint">姓名</string>
+    <string name="create_persona_prompt">名前を入力しアカウントを作成</string>
+    <string name="first_name_hint">氏名</string>
+    <string name="last_name_prompt">姓</string>
+    <string name="first_name_prompt">氏</string>
+    <string name="do_create_persona">作成</string>
+    <string name="title_activity_contact">コンタクト</string>
+    <string name="pairing_description">ペアリング　データ</string>
+    <string name="title_activity_send_to_contact">コンタクト先に送る</string>
+
+    <string name="send_amount_prompt">Price</string>
+    <string name="send_recipient">受信者</string>
+    <string name="send_confirm_prompt">確定する</string>
+    <string name="title_activity_anonymous_send">匿名で送る</string>
+
+    <string name="enter_name_prompt">Enter name</string>
+    <string name="personas_label">Login</string>
+    <string name="personas_create">Create Persona</string>
+    <string name="created_label">Creating</string>
+    <string name="funded_label">Funded</string>
+    <string name="broadcasted_label">Broadcasted</string>
+    <string name="confirming_label">Confirming</string>
+    <string name="confirmed_label">Confirmed</string>
+    <string name="rename_label">Rename</string>
+    <string name="delete_label">Delete</string>
+    <string name="title_activity_tabbed">Wallet Home</string>
+    <string name="tab_text_1">Chats</string>
+    <string name="tab_text_2">Contact</string>
+    <string name="tab_text_3">Settings</string>
+
+    <string name="card_title">My Card</string>
+    <string name="persona_default_name">Anonymous</string>
+    <string name="persona_status_created">Created</string>
+    <string name="persona_status_funding">Funding</string>
+    <string name="persona_status_broadcasted">Broadcasted</string>
+    <string name="persona_status_confirming">Confirming</string>
+    <string name="persona_status_confirmed">Confirmed</string>
+    <string name="persona_status_expired">Expired</string>
+    <string name="persona_status_expiring">Expiring</string>
+    <string name="persona_status_unknown">Unknown</string>
+    <string name="toolbar_logout">Logout</string>
+    <string name="contact_top_name">Name</string>
+    <string name="contact_top_subname">SubName</string>
+    <string name="contact_top_uri">URI</string>
+    <string name="transaction_default_uri">a.b</string>
+    <string name="transaction_default_name">00000</string>
+    <string name="transaction_default_reason">Something</string>
+    <string name="transaction_default_time">00:00</string>
+    <string name="transaction_default_status">Unknown</string>
+    <string name="action_contacts">Contacts</string>
+    <string name="action_wallet">Chats</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_prefs">Preferences</string>
+    <string name="transaction_default_asset">JPY</string>
+</resources>

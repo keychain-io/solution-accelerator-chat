@@ -1,0 +1,7 @@
+<resources>
+    <style name="EnvironmentLabelTheme" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textColor">#EF2C2C</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

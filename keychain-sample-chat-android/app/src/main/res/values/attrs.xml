@@ -1,0 +1,14 @@
+<resources>
+    <attr name="toolbarBackground" format="color" />
+    <attr name="backgroundVariant" format="color" />
+    <attr name="colorBackground" format="color" />
+
+    <!-- Status colors needed because of background variation in themes -->
+    <attr name="colorPending" format="color"/>
+    <attr name="colorOff" format="color"/>
+    <attr name="colorInit" format="color"/>
+    <attr name="colorNegotiating" format="color"/>
+    <attr name="colorOn" format="color"/>
+    <attr name="colorErrorBackground" format="color"/>
+    <attr name="brandingConfirmedStatus" format="color"/>
+</resources>

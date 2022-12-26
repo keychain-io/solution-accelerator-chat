@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.keychain.chat">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- MQTT Service -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application
+        android:name=".KeychainApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppTheme"
+        tools:replace="android:allowBackup">
+        <activity
+            android:name=".views.qrcode.QrCodeActivity"
+            android:exported="true" />
+        <!--
+         Activity Launch Modes
+          We want Home->relaunch to take us to the last activity, so TabbedActivity and PersonaActivity should NOT be 'SingleTask'
+          'Standard' is not OK, because it is possible to back out of PersonaActivity to Home, then come back and have a new one.
+          'SingleTop' is OK for PersonaActivity so long as we 'finish()' before leaving with new Intent, as that way it's either onDestroy()ed or on top and not recreated
+          'SingleTask' for TabbedActivity?  Need to make sure launch takes us there ONLY if stack is empty or it's on top
+          That way it is either on the top
+        -->
+        <activity
+            android:name=".views.TabbedActivity"
+            android:label="@string/title_activity_tabbed"
+            android:parentActivityName=".views.TabbedActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.keychain.chat.views.TabbedActivity" />
+        </activity>
+        <activity
+            android:name=".views.persona.PersonaActivity"
+            android:label="@string/title_activity_persona"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+    </application>
+
+</manifest>

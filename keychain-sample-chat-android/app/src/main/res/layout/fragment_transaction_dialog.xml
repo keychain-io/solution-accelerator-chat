@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".views.TabbedActivity">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryVariant"
+        android:textColor="?attr/colorOnPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center"
+        android:text="Transaction Detail"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingVertical="6dp" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:text="Sender URI"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="?attr/colorOnBackground"
+        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/UriTextPersona"
+        android:layout_width="194dp"
+        android:layout_height="21dp"
+        android:layout_column="2"
+        android:layout_marginStart="60dp"
+        android:text="@string/transaction_default_uri"
+        android:textAlignment="viewStart"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Reason"
+        android:textColor="?attr/colorOnBackground"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Sender Name"
+        android:textColor="?attr/colorOnBackground"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="@+id/textView8"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/nameSender"
+        android:layout_width="188dp"
+        android:layout_height="20dp"
+        android:layout_column="2"
+        android:text="@string/transaction_default_name"
+        android:textAlignment="viewStart"
+        app:layout_constraintEnd_toEndOf="@+id/UriTextPersona"
+        app:layout_constraintStart_toStartOf="@+id/UriTextPersona"
+        app:layout_constraintTop_toTopOf="@+id/textView11" />
+
+    <TextView
+        android:id="@+id/senderReason"
+        android:layout_width="187dp"
+        android:layout_height="20dp"
+        android:layout_column="2"
+        android:text="@string/transaction_default_reason"
+        android:textAlignment="viewStart"
+        app:layout_constraintEnd_toEndOf="@+id/nameSender"
+        app:layout_constraintStart_toStartOf="@+id/nameSender"
+        app:layout_constraintTop_toTopOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/senderTime"
+        android:layout_width="191dp"
+        android:layout_height="20dp"
+        android:layout_column="2"
+        android:text="@string/transaction_default_time"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="@+id/senderReason"
+        app:layout_constraintStart_toStartOf="@+id/senderReason"
+        app:layout_constraintTop_toTopOf="@+id/textView13" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="60dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="14dp"
+        android:text="Time"
+        android:textColor="?attr/colorOnBackground"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView12"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/statusTextLabel"
+        android:layout_width="60dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="14dp"
+        android:text="Status"
+        android:textColor="?attr/colorOnBackground"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView13"
+        app:layout_constraintTop_toBottomOf="@+id/textView13"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_column="2"
+        android:text="@string/transaction_default_status"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/senderTime"
+        app:layout_constraintTop_toTopOf="@+id/statusTextLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/assetTextLabel"
+        android:layout_width="60dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="20dp"
+        android:text="Asset"
+        android:textColor="?attr/colorOnBackground"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/statusTextLabel"
+        app:layout_constraintTop_toBottomOf="@+id/statusTextLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/assetText"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_column="2"
+        android:text="@string/transaction_default_asset"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/statusText"
+        app:layout_constraintTop_toTopOf="@+id/assetTextLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

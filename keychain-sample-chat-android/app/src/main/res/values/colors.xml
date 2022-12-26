@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="actionbar_opacity">#33000000</color>
+
+    <!-- Keychain colors -->
+    <color name="branding_dkgray">#3E5063</color>
+    <color name="branding_ltgray">#758B9B</color>
+    <color name="brandingConfirmedStatus">#6D6E71</color>
+    <color name="branding_cloud_blue_1">#94A5CC</color>
+    <color name="branding_cloud_blue_2">#C0D1F5</color>
+    <color name="branding_cloud_blue_3">#D9EAFC</color>
+    <color name="branding_cloud_blue_4">#E9ECFA</color>
+    <color name="branding_turquoise">#71E4D1</color>
+    <color name="branding_cyan">#67CFEE</color>
+    <color name="branding_magenta">#BB93DD</color>
+    <color name="branding_pink">#FAA9DC</color>
+    <color name="branding_beige">#FFD0D7</color>
+    <color name="branding_yellow">#FDF8C3</color>
+    <!-- Added -->
+    <color name="branding_dkcyan">#26C5F4</color>
+    <color name="branding_magenta_500">#9D4CE3</color>
+    <color name="branding_magenta_700">#8712EC</color>
+
+    <!-- A smattering of other colors -->
+    <color name="burgundy">#CC0000</color>
+    <color name="red">#FF0000</color>
+    <color name="light_red">#CF6679</color>
+    <color name="red_100">#FFCDD2</color>
+    <color name="red_900">#B71C1C</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="green_200">#A5D6A7</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="green_700">#388E3C</color>
+    <color name="amber_200">#FFE082</color>
+    <color name="amber_500">#FFC107</color>
+    <color name="amber_700">#FFA000</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#474747</color>
+
+</resources>

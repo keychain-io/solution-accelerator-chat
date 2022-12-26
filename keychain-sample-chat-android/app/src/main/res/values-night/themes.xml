@@ -1,0 +1,72 @@
+<resources xmlns:tools="http://schemas.android.com/tools">>
+    <style name="Theme.AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:dialogTheme">@style/AppDialogTheme</item>
+
+        <!-- Background, Error -->
+        <item name="android:colorBackground">@color/black</item>
+        <item name="colorBackground">@color/black</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorError">@color/light_red</item>
+        <item name="colorOnError">@color/black</item>
+        <item name="colorErrorBackground">@color/red_900</item>
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/branding_cloud_blue_2</item>
+        <item name="colorPrimaryVariant">@color/branding_cloud_blue_1</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/branding_cyan</item>
+        <item name="colorSecondaryVariant">@color/branding_cyan</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <item name="backgroundVariant">@color/gray_800</item>
+        <item name="colorPending">@color/gray_400</item>
+        <item name="colorOff">@color/gray_400</item>
+        <item name="colorInit">@color/teal_200</item>
+        <item name="colorNegotiating">@color/amber_500</item>
+        <item name="colorOn">@color/green_500</item>
+        <item name="brandingConfirmedStatus">@color/brandingConfirmedStatus</item>
+    </style>
+
+    <style name="AppDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <!-- Define color properties as desired -->
+        <item name="android:windowBackground">?attr/backgroundVariant</item>
+
+        <item name="colorPrimaryDark">@color/amber_500</item>
+        <item name="android:textColorHighlight">@color/branding_cloud_blue_1</item>
+        <item name="colorAccent">@color/branding_cyan</item>
+        <item name="colorControlNormal">@color/teal_200</item>
+
+        <!-- Background, Error -->
+        <item name="android:colorBackground">@color/black</item>
+        <item name="colorBackground">@color/black</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorError">@color/light_red</item>
+        <item name="colorOnError">@color/black</item>
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/branding_cloud_blue_2</item>
+        <item name="colorPrimaryVariant">@color/branding_cloud_blue_1</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/branding_cyan</item>
+        <item name="colorSecondaryVariant">@color/branding_cyan</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+
+
+        <!-- Define window properties as desired -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>mqttHost</key>
+	<string>54.65.160.194</string>
+	<key>mqttPort</key>
+	<integer>1883</integer>
+	<key>mqttChannelPairing</key>
+	<string>UAT/chat/pairing/</string>
+	<key>mqttChannelChats</key>
+	<string>UAT/chat/messages/</string>
+	<key>directoryHost</key>
+	<string>54.65.160.194</string>
+	<key>directoryPort</key>
+	<real>3301</real>
+	<key>directoryDomainPrefix</key>
+	<string>MULTI-chat-</string>
+	<key>pairingDomain</key>
+	<string>keychain-chat</string>
+	<key>refreshInterval</key>
+	<integer>3</integer>
+	<key>resetChatDB</key>
+	<false/>
+</dict>
+</plist>

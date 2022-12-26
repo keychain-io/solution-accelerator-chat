@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".views.persona.PersonaActivity"
+    tools:showIn="@layout/activity_persona">
+
+<!--    <EditText
+        android:id="@+id/lastNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/last_name_hint"
+        app:layout_constraintStart_toEndOf="@+id/lastNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/createPersonaTextView"
+        />
+
+    <TextView
+        android:id="@+id/createPersonaTextView"
+        android:layout_width="207dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/create_persona_prompt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/firstNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/first_name_hint"
+        app:layout_constraintStart_toEndOf="@+id/firstNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/lastNameEditText"
+        />
+
+    <TextView
+        android:id="@+id/lastNameTextView"
+        android:layout_width="72dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/last_name_prompt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createPersonaTextView" />
+
+    <TextView
+        android:id="@+id/firstNameTextView"
+        android:layout_width="75dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/first_name_prompt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lastNameTextView" />-->
+
+    <ListView
+        android:id="@+id/listPersonas"
+        android:layout_width="174dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:choiceMode="singleChoice"
+        android:listSelector="#666666"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.103"
+        app:layout_constraintStart_toEndOf="@+id/qrCodeView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/qrCodeView"
+        android:layout_width="253dp"
+        android:layout_height="251dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="qrcode"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars[0]" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createPersonaButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+
+    <TableLayout
+        android:id="@+id/namePanel"
+        android:layout_width="206dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/qrCodeView"
+        app:layout_constraintStart_toStartOf="@+id/qrCodeView"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:text="@string/enter_name_prompt" />
+
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="@string/last_name_prompt" />
+
+            <EditText
+                android:id="@+id/lastNameEditTextPersona"
+                android:layout_width="166dp"
+                android:layout_height="wrap_content"
+                android:width="200px"
+                android:imeOptions="actionDone"
+                android:inputType="textShortMessage"
+                android:singleLine="true" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="@string/first_name_prompt" />
+
+            <EditText
+                android:id="@+id/firstNameEditTextPersona"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:width="200px"
+                android:imeOptions="actionDone"
+                android:inputType="textShortMessage"
+                android:singleLine="true" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/personas_label"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/listPersonas"
+        app:layout_constraintStart_toStartOf="@+id/listPersonas" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,93 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewmodel="clr-namespace:KeychainChat.MVVM.ViewModel">
+    <Style TargetType="ListViewItem" x:Key="Chat Item">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0"/>
+                            <ColumnDefinition Width="100*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <DockPanel Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,0,0,2">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="{Binding ChatAllignment}">
+                                <Border Width="30"
+                                    Height="30"
+                                    Margin="10,20,5,0"
+                                    Background="{Binding InitialsBackgroundColor}"
+                                    CornerRadius="25"
+                                    VerticalAlignment="Top">
+                                    <Label Content="{Binding Initials}"
+                                         Foreground="Black"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         FontSize="10"/>
+                                </Border>
+
+                                <Border CornerRadius="{Binding ChatCornerRadius}"
+                                    Background="{Binding ChatBackgroundColor}"
+                                    Padding="8"
+                                    Margin="0,10,10,0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Grid.Row="0" 
+                                            Orientation="Horizontal">
+                                            <Label Content="{Binding UserName}"
+                                           Foreground="Black"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           FontSize="10"/>
+                                            <Label Content="{Binding Time}"
+                                           Foreground="Black"
+                                           FontSize="8"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="1"
+                                           Text="{Binding Message}"
+                                           Foreground="Black"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Margin="5,0,10,5"
+                                           MaxWidth="{Binding ElementName=mainWindow, Path=MaxMessageWidth}"/>
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
+
+                        </DockPanel>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Resources>
+            <ControlTemplate x:Key="CustomRow">
+                <StackPanel HorizontalAlignment="Right">
+                    <Label Content="{Binding Time}"
+                                       Foreground="DarkGray"
+                                       FontSize="8"
+                                       VerticalAlignment="Center"/>
+                    <Label Content="{Binding Message}"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Style.Resources>
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Message}" Value="False">
+                <Setter Property="Template" Value="{StaticResource CustomRow}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
