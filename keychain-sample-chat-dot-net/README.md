@@ -6,7 +6,7 @@ This is a sample application that was created to demonstrate the practical use o
 
 ## Requirements
 
-This project is written in C# .NET for Windows and requires Microsoft Visual Studio. We used Visual Studio 2022 and .NET Framework 6 to develop this sample. 
+This project is written in C# .NET for Windows and requires Microsoft Visual Studio. We used Visual Studio 2022 and .NET Framework 6 to develop this sample.
 
 ## Assumptions
 
@@ -29,7 +29,7 @@ Open the project in Visual Studio.
 
 The files needed to run the chat app are located in the project's config directory as shown in the following image:
 
-<img src="./images/ConfigurationFiles.png"  width="400">
+![Config files](./images/Slide1.png)
 
 With a few exceptions, to be noted later, the following files should not be changed, since they are used internally to initialize the SQLite databases that are used by the application and by the Keychain SDK.
 
@@ -95,9 +95,9 @@ The file `chats.sql` is used to create the SQLite database that is used by the c
 
 The chat application also uses an App.config file to specify configurations for where the databases will be created at runtime. And also for configuring MQTT. MQTT is used to send and receive both pairing and chat messages.
 
-<img src="./images/AppConfig.png"  width="400">
+![App Config](./images/AppConfig.png)
 
-The contents of the App.config file looks similar to the following: 
+The contents of the App.config file looks similar to the following:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -139,7 +139,7 @@ https://keychain.jfrog.io/ui/native/keychain-core-release-generic/keychain-cshar
 
 After downloading the zip file, unzip it into a directory of your choice (i.e. C:\Keychain). Then in Visual Studio, make sure you reference KeychainCli.dll as shown below:
 
-<img src="./images/KeychainSDK.png"  width="400">
+![Keychain SDK](./images/KeychainSDK.png)
 
 Moreover, you will also need to install the following NuGet packages as shown below (we assume you know how to do so):
 
