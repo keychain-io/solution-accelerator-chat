@@ -29,7 +29,7 @@ Open the project in Visual Studio.
 
 The files needed to run the chat app are located in the project's config directory as shown in the following image:
 
-![Config files](./images/Slide1.png)
+![Config files](./images/ConfigurationFiles.png)
 
 With a few exceptions, to be noted later, the following files should not be changed, since they are used internally to initialize the SQLite databases that are used by the application and by the Keychain SDK.
 
