@@ -143,15 +143,15 @@ After downloading the zip file, unzip it into a directory of your choice (i.e. C
 
 Moreover, you will also need to install the following NuGet packages as shown below (we assume you know how to do so):
 
-<img src="./images/NuGetPackages1.png"  width="400">
+![NuGet Package Dependencies 1](./images/NuGetPackages1.png)
 
-<img src="./images/NuGetPackages2.png"  width="800">
+![NuGet Package Dependencies 1](./images/NuGetPackages2.png)
 
 ### Project Structure
 
 The Keychain Chat sample application project is written using the MVVM (Model View ViewModel) design pattern. The project structure is as follows:
 
-<img src="./images/MVVMProjectStructure.png"  width="400">
+![Project Structure](./images/MVVMProjectStructure.png)
 
 * `Models` contains the application level data classes. There are other data classes that are part of Keychain SDK
 * `Views` contains the user interface classes
@@ -164,7 +164,7 @@ The Keychain Chat sample application project is written using the MVVM (Model Vi
 
 The following is a high level depiction of the architecture of the chat sample application.
 
-<img src="./images/ChatHiLevelView.png"  width="800">
+![High Level View](./images/ChatHiLevelView.png)
 
 The Keychain Chat sample application uses Blockchain technology for creating and managing sovereign identities. These identities are the digital identities of the device owner, which is known as a Persona, and the digital identities of owners of other devices, known as contacts. In order to send a message to another device running a Keychain chat application, you need to pair your device with a contact that is being used on a different device. Pairing can be performed by scanning a QR Code or by downloading the URIs of contacts from a trusted directory (an http server). Once paired, you can send messages to one contact at a time, or to all contacts at once using MQTT. Because the messages are signed and encrypted, only the contacts to whom you send messages will be able to decrypt and read those messages.
 
@@ -172,7 +172,7 @@ The Keychain Chat sample application uses Blockchain technology for creating and
 
 When you run the chat sample application for the first time, you will need to create a persona. A persona is your sovereign digital identity. You will need it in order to login and use the chat application. You can create as many personas as you like. Each persona you create will represent a different identity. It is like having several representations of yourself.
 
-<img src="./images/LoginScreenNoPersona.png"  width="800">
+![Login Screen No Persona](./images/LoginScreenNoPersona.png)
 
 Above is the login screen before any personas are created.
 
@@ -180,7 +180,7 @@ Above is the login screen before any personas are created.
 
 To create a persona, click the `+` icon at the bottom left of the screen to bring up the Create Persona dialog as shown below. Then enter a name and sub name for the persona (you can name it whatever you like). Tab out of the Sub Name field and click the Save button.
 
-<img src="./images/CreatePersonaScreen.png"  width="800">
+![Create Persona Screen](./images/CreatePersonaScreen.png)
 
 After creating the persona, it goes through the following status changes before it is fully matured and ready for use:
 
@@ -201,7 +201,7 @@ The status of the persona must be `Confirmed` before you can use it to login.
 
 The following screen shot shown more than one personas created, with one still not fully confirmed.
 
-<img src="./images/LoginScreeManyPersonas.png"  width="800">
+![Login Scree Many Personas](./images/LoginScreeManyPersonas.png)
 
 To login to the chat application, select the persona you want to login as. Then click the login button at the upper left of the screen. That will take you to the contacts tab. Additionally, the persona's URI will be uploaded to the trusted directory. And using MQTT, the application will subscribe to three topics:
 
@@ -213,11 +213,11 @@ To login to the chat application, select the persona you want to login as. Then 
 
 After logging in, you will be taken to the Contacts tab. Initially, the only selection that will appear in the Contact tab will be the ALL chat. After you pair with other devices, the paired contacts will appear in the Contacts tab. Additionally, your persona's URI will also be automatically uploaded to the trusted directory, so that other devices can initiate pairing with you. That will allow other devices that are running Keychain Chat to pair with your device by downloading your persona's URI.
 
-<img src="./images/ContactScreenNoContacts.png"  width="800">
+![Contact Screen No Contacts](./images/ContactScreenNoContacts.png)
 
 To pair with another device, you can either display your selected persona's QR code by clicking the QR code icon at the upper right of the left pane, and have the other device scan your QR code, as shown below:
 
-<img src="./images/MyQRCode.png"  width="800">
+![QR Code](./images/MyQRCode.png)
 
 
 Alternatively, you can download the URI's of all devices that have uploaded their persona URIs to the trusted directory, by clicking the button the left of the QR code button. This will cause the app to send pairing requests to each of the devices that have uploaded their URI's to the trusted directory. Doing so will cause the application to:
@@ -235,7 +235,7 @@ Alternatively, you can download the URI's of all devices that have uploaded thei
 
 The following shows the contacts screen after having paired other devices.
 
-<img src="./images/ContactsScreenWithContacts.png"  width="800">
+![Contacts Screen With Contacts](./images/ContactsScreenWithContacts.png)
 
 ### Sending Messages
 
@@ -247,19 +247,19 @@ One of the key features of Keychain is that only contacts that a message was int
 
 To chat with one contact, select the contact you want to chat with. The selected contact is displayed above the conversation pane. Please make sure that the contact you want to chat with is also running Keychain Chat and is logged in. You can then type and send your messages. See the screenshot below.
 
-<img src="./images/ConversationScreen.png"  width="800">
+![Conversation Screen](./images/ConversationScreen.png)
 
 #### Chatting with All Contacts
 
 To chat with all contacts at once, who were downloaded from the trusted directory, select `ALL` below the `Contacts` tab, as shown below:
 
-<img src="./images/AllSelected.png"  width="800">
+![All Selected](./images/AllSelected.png)
 
 This will allow you to chat with all contacts associated with the logged in persona simultaneously. As shown below, the logged in persona is chatting with three contacts simultaneously:
 
-<img src="./images/ConversationScreenAllChat.png"  width="800">
+![Conversation Screen All Chat](./images/ConversationScreenAllChat.png)
 
-Whether or not you are chatting with one contact or all, only the contacts that you have paired with and intend to chat with, will be able to decrypt and display the messages.
+If you are chatting with one contact or all contacts, only the contacts that you have paired with and intend to chat with, will be able to decrypt and display the messages.
 
 ## Technical Details
 
