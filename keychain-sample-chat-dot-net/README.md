@@ -123,7 +123,7 @@ The contents of the App.config file looks similar to the following:
 </configuration>
 ```
 
-Please edit the App.config file to set the directory paths based on where you want the indicated file to reside in your system.
+Please edit the App.config file to set the directory paths based on where you want the indicated files to reside in your system.
 
 > You may need to add a firewall rule for outgoing tcp/ip connections for the ip address and port.
 
@@ -170,7 +170,7 @@ The Keychain Chat sample application uses Blockchain technology for creating and
 
 ## Using the Application
 
-When you run the chat sample application for the first time, you will need to create a persona. A persona is your sovereign digital identity. You will need it in order to login and use the chat application. You can create as many personas as you like. Each persona you create will represent a different identity. It is like having several representations of yourself.
+When you run the chat sample application for the first time, you will need to create a persona. A persona is your sovereign digital identity. You will need it in order to login and use the chat application. You can create as many personas as you like. Each persona you create will represent a different identity. It is like having several representations of yourself on one device.
 
 ![Login Screen No Persona](./images/LoginScreenNoPersona.png)
 
@@ -233,7 +233,7 @@ Alternatively, you can download the URI's of all devices that have uploaded thei
   * call Keychain to create a contact from the pair response
   * The contact will then appear in the contact list
 
-The following shows the contacts screen after having paired other devices.
+The following shows the contacts screen after having paired with other devices.
 
 ![Contacts Screen With Contacts](./images/ContactsScreenWithContacts.png)
 
@@ -269,16 +269,16 @@ The Keychain Chat sample application for Windows is written in C# and WPF using 
 
 Before using Keychain to encrypt/decrypt messages, Keychain's `Gateway` class must first be instantiated and initialized. This should only be performed once after starting the application and before using any Keychain functions. In this sample application we wrap the `Gateway` class in a service class called KeychainService. In turn KeychainService is contained in KeychainViewModel, which is used by any views or higher level view models that need to communicate with Keychain.
 
-<img src="./images/InstanciateGateway.png"  width="600">
+![Instanciate Gateway](./images/InstanciateGateway.png)
 
 When KeychainViewModel is instantiated, it gets an singleton instance of KeychainService:
 
-<img src="./images/KeychainServiceSingleton.png"  width="600">
+![Keychain Service Singleton](./images/KeychainServiceSingleton.png)
 
 
 Ultimately, instantiating Keychain is accomplished in the KeychainService by creating an instance of Keychain's Gateway class. After this is completed, it is okay to call methods of the KeychainService that will in turn call Keychain's Gateway class's methods.
 
-<img src="./images/KeychainServiceFunctions.png"  width="400">
+![Keychain Service Functions](./images/KeychainServiceFunctions.png)
 
 Please explore the functions of the KeychainService class and how they relate to the function calls to Keychain's Gateway class. Also, please explore and note when and where each method it being called by the application.
 
