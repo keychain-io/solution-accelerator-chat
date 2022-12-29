@@ -14,16 +14,7 @@ We assume that you are already familiar with C# and WPF programming as well as t
 
 ## Building the Project
 
-To build and run the sample application, please follow the steps below:
-
-### Clone the Project
-The project is hosted on GitHub and can be anonymously downloaded from the following link:
-
-```bash
-https://github.com/keychain-io/keychain-chat-dot-net/tree/2.4
-```
-
-Open the project in Visual Studio.
+To build and run the sample application, please open the project in Visual Studio and follow the steps below:
 
 ### Configuration
 

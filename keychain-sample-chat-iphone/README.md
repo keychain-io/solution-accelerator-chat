@@ -9,27 +9,12 @@ We assume that you are already familiar with SwiftUI programming, iPhone App dev
 
 ## Building the Project
 
-To build and run the sample application, please follow the steps below:
-
-### Clone the Project
-The project is hosted on GitHub and can be anonymously downloaded using the following command in your Android Studio projects directory (or a directory of your choice):
-
-```bash
-git clone https://github.com/keychain-io/keychain-sample-chat-iphone/tree/2.4
-```
-
-This will clone the project to the following directory:
-
-```
-./keychain-sample-chat-iphone
-```
-
-Open the project in Xcode.
+To build and run the sample application, please open the project in XCode and follow the steps below:
 
 ### Package Dependencies
 You may need to update the project dependencies. The package dependencies are highlighted in the image below.
 
-![Architecture](./images/SwiftPackageDependencies.png)
+![Swift Package Dependencies](./images/SwiftPackageDependencies.png)
 
 You may need to tell Xcode to update the package dependencies before the project will build.
 
@@ -37,7 +22,7 @@ You may need to tell Xcode to update the package dependencies before the project
 
 The files needed to run the chat app are located in the project's assets directory as shown in the following image:
 
-![Architecture](./images/ConfigurationFiles1.png)
+![Configuration Files](./images/ConfigurationFiles1.png)
 
 #### keychain.cfg
 
@@ -167,7 +152,7 @@ The Keychain Chat sample application uses Blockchain technology for creating and
 
 When you run the chat sample application for the first time, you will need to create a persona. A persona is your sovereign digital identity. You will need it in order to login and use the chat application. You can create as many personas as you like.
 
-![Architecture](./images/LoginScreenNoPersona1.PNG)
+![Architecture](./images/LoginScreenNoPersona1.png)
 
 Above is the login screen before any personas are created.
 
@@ -175,7 +160,7 @@ Above is the login screen before any personas are created.
 
 To create a persona, tap the button at the upper right of the screen to bring up the Create Persona dialog as shown below. Then enter a first and last name for the persona, and tap `CREATE`. While you can add a profile image, the image will not be displayed in the application. This is a known bug and may or may/not be fixed in the future.
 
-![Architecture](./images/CreatePersonaScreen1.PNG)
+![Architecture](./images/CreatePersonaScreen1.png)
 
 After creating the persona, it goes through the following status changes before it is fully matured and ready for use:
 
