@@ -310,8 +310,6 @@ class ChatViewModel: ObservableObject,
     var keychainService = KeychainService.instance
 ```
 
-![Creat Keychain Service](./images/CreatKeychainService.png)
-
 Because KeychainService is a singleton, only one instance of KeychainService is created. Please keep that in mind, there should only be one instance of Keychain's Gateway instantiated in your application.
 
 And ultimately, instantiating Keychain's Gateway is accomplished in the KeychainService by creating an instance of Keychain's Gateway class. After this is completed, it is okay to call methods of the keychainService that will in turn call Keychain's Gateway class's methods.
