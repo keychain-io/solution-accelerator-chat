@@ -85,7 +85,7 @@ The file `Chats.sql` is used to create the SQLite database that is used by the c
 
 The chat application uses MQTT to send and receive both pairing and chat messages. The configuration for MQTT is contained in the `Config.plist` file. It's contents is as follows:
 
-![Architecture](./images/ConfigPList.png)
+![Config PList](./images/ConfigPList.png)
 
 > You may need to add a firewall rule for outgoing tcp/ip connections for the ip address and port.
 
@@ -95,11 +95,15 @@ You should also change the value of `directoryDomainPrefix` to a unique string t
 
 The Keychain SDK is packaged in the `Keychain-ObjectiveC.xcframework` file as shown below:
 
-![Architecture](./images/KeychainSDK.png)
+![Keychain SDK](./images/KeychainSDK.png)
 
-The `Keychain-ObjectiveC.xcframework` file contains the Keychain library and ObjectiveC classes that allows us to call Keychain functions from either ObjectiveC or Swift code. The bridging header file shown below, is what allows us to seamlessly interact with the Keychain ObjectiveC framework from Swift.
+The `Keychain-ObjectiveC.xcframework` file contains the Keychain library and ObjectiveC classes that allows us to call Keychain functions from either ObjectiveC or Swift code. This file must be copied during the build phase as shown below (we expect that you know how to do this):
 
-![Architecture](./images/BridgingHeaderFile.png)
+![Copy XCFramework](./images/CopyXCFramework.png)
+
+The bridging header file, shown below, is what allows us to seamlessly interact with the Keychain ObjectiveC framework from Swift.
+
+![Bridging HeaderFile](./images/BridgingHeaderFile.png)
 
 The contents of the bridging header file is as follows, and is all that is needed in Swift to allow us to use the code contained in the ObjectiveC framework:
 
@@ -127,7 +131,7 @@ The contents of the bridging header file is as follows, and is all that is neede
 
 The Keychain Chat sample application project is written using the MVVM (Model View ViewModel) design pattern. The project structure is as follows:
 
-![Architecture](./images/ProjectStructureMVVM.PNG)
+![Project Structure MVVM](./images/ProjectStructureMVVM.png)
 
 * `Models` contains the application level data classes. There are other data classes that are part of Keychain SDK, which can be referenced from the bridging header file that was mentioned earlier
 * `Views` contains the user interface classes
@@ -144,7 +148,7 @@ Build and run the project either in a simulator or on an actual phone or tablet.
 
 The following is a high level depiction of the architecture of the chat sample application.
 
-![Architecture](./images/ChatHiLevelView.PNG)
+![Chat Hi Level View](./images/ChatHiLevelView.PNG)
 
 The Keychain Chat sample application uses Blockchain technology for creating and managing sovereign identities. These identities are the digital identities of the device owner, which is known as a Persona, and the digital identities of owners of other devices, known as contacts. In order to send a message to another device running a Keychain chat application, you need to pair your device with that of a contact. Pairing can be performed by scanning a QR Code or by downloading the URIs of contacts from a trusted directory (an http server). Once paired, you can send messages to one contact at a time, or to all contacts at once using MQTT. Because the messages are signed and encrypted, only the contacts to whom you send messages to will be able to decrypt and read those messages, and only if you have paired with them.
 
@@ -152,7 +156,7 @@ The Keychain Chat sample application uses Blockchain technology for creating and
 
 When you run the chat sample application for the first time, you will need to create a persona. A persona is your sovereign digital identity. You will need it in order to login and use the chat application. You can create as many personas as you like.
 
-![Architecture](./images/LoginScreenNoPersona1.png)
+![Login Screen No Persona](./images/LoginScreenNoPersona1.png)
 
 Above is the login screen before any personas are created.
 
@@ -160,7 +164,7 @@ Above is the login screen before any personas are created.
 
 To create a persona, tap the button at the upper right of the screen to bring up the Create Persona dialog as shown below. Then enter a first and last name for the persona, and tap `CREATE`. While you can add a profile image, the image will not be displayed in the application. This is a known bug and may or may/not be fixed in the future.
 
-![Architecture](./images/CreatePersonaScreen1.png)
+![Create Persona Screen](./images/CreatePersonaScreen1.png)
 
 After creating the persona, it goes through the following status changes before it is fully matured and ready for use:
 
@@ -184,11 +188,11 @@ The status of the persona must be `CONFIRMED` before you can use it to login.
 
 ### Login
 
-The following screen shot shows several personas created, with one still not fully confirmed.
+The following screenshot shows several personas created, with one still not fully confirmed.
 
-![Architecture](./images/LoginScreenWithPersonas.png)
+![Login Screen With Personas](./images/LoginScreenWithPersonas.png)
 
-To login to the chat application, touch the persona you want to login as. That will take you to the contacts screen. Additionally, the persona's URI will be uploaded to the trusted directory. And using MQTT, the application will subscribe to three topics:
+To login to the chat application, touch the persona you want to log in as. That will take you to the contacts screen. Additionally, the persona's URI will be uploaded to the trusted directory. And using MQTT, the application will subscribe to three topics:
 
 * Messages sent to the logged in persona
 * Messages sent to all personas
@@ -198,17 +202,17 @@ To login to the chat application, touch the persona you want to login as. That w
 
 After logging in, you will be taken to the Contacts screen. Any contacts you are paired with will appear in the Contacts screen. Additionally, your persona's URI will also be automatically uploaded to the trusted directory. That will allow other devices that are running Keychain Chat to pair with your device by downloading your persona's URI.
 
-![Architecture](./images/ContactsScreenNoContacts.png)
+![Contacts Screen No Contacts](./images/ContactsScreenNoContacts.png)
 
 To pair with another device, you can either scan the QR code of the other device that is running a copy of the Keychain Chat application, or you can have the other device scan your QR code. Alternatively, you can download the URI's of all devices that have uploaded their persona URIs to the trusted directory, and pair with each of them.
 
 To pair with another device, touch the QR code button. You will be presented with three choices, to display your QR code, use your QR code scanner, or pair using the trusted directory, as shown below:
 
-![Architecture](./images/PairingOptions.png)
+![Pairing Options](./images/PairingOptions.png)
 
 If you elect to display your QR code so that another device can scan it and send you a pairing request, you will see a screen similar to the following:
 
-![Architecture](./images/QRCode.png)
+![QR Code](./images/QRCode.png)
 
 If you pair by scanning the other device's QR code, the following steps take place:
 
@@ -239,7 +243,7 @@ If you pair using the following trusted directory, the following steps take plac
 
 The following shows the contacts screen after having paired with 3 other devices.
 
-![Architecture](./images/PairedWithContacts.png)
+![Paired With Contacts](./images/PairedWithContacts.png)
 
 ### Sending Messages
 
@@ -251,7 +255,7 @@ One of the key features of Keychain is that only contacts that a message was int
 
 To chat with one contact, select the contact you want to chat with. Please make sure that the contact you want to chat with is also running Keychain Chat and is logged in. Tap the name of the contact you wish to chat with. This will bring up the conversation screen where you can then chat securely with one contact. As shown below:
 
-![Architecture](./images/ChatWithOneContact.png)
+![Chat With One Contact](./images/ChatWithOneContact.png)
 
 #### Chatting with All Contacts
 
@@ -259,11 +263,11 @@ To chat with all contacts at once, who were downloaded from the trusted director
 
 Doing so will display the conversation screen, which displays messages sent and received to the ALL chats group. Contacts that have not paired with you will receive the messages, but will not be able to decrypt nor display them until after they have paired with you.
 
-![Architecture](./images/ChatsScreen1.png)
+![Chats Screen](./images/ChatsScreen1.png)
 
-![Architecture](./images/ChatWithAll.png)
+![Chat With All](./images/ChatWithAll.png)
 
-Whether or not your are chatting with one contact or all, only the contacts that you have paired with and intend to chat with, will be able to decrypt and display the messages.
+If you are chatting with one contact or all, only the contacts that you have paired with and intend to chat with, will be able to decrypt and display the messages.
 
 ## Technical Details
 
@@ -273,7 +277,7 @@ The Keychain Chat sample application for Android is written in SwiftUI using the
 
 Before using Keychain to encrypt/decrypt messages, Keychain's `Gateway` class must first be instantiated and initialized. This should only be performed once after starting the application and before using any Keychain functions. In this sample application we wrap the Keychain `Gateway` class in a service class called KeychainService. In turn KeychainService is contained in ChatViewModel, which is used by any views or higher level view models that need to communicate with Keychain.
 
-When ChatViewModel is instantiated, it gets an singleton instance of KeychainService:
+When ChatViewModel is instantiated, it gets a singleton instance of KeychainService:
 
 ```Swift
 class ChatViewModel: ObservableObject,
@@ -306,7 +310,7 @@ class ChatViewModel: ObservableObject,
     var keychainService = KeychainService.instance
 ```
 
-![Architecture](./images/CreatKeychainService.png)
+![Creat Keychain Service](./images/CreatKeychainService.png)
 
 Because KeychainService is a singleton, only one instance of KeychainService is created. Please keep that in mind, there should only be one instance of Keychain's Gateway instantiated in your application.
 
