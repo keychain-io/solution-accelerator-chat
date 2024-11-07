@@ -76,6 +76,7 @@ dependencies {
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
-    implementation 'com.github.stfalcon:chatkit:0.3.3'
+    implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
 }

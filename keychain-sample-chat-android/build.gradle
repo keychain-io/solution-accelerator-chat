@@ -21,11 +21,21 @@ allprojects {
     repositories {
         google()
 
-        // Don't remove this - needed for 'volley'
-        jcenter()
+        mavenCentral()
 
         maven {
             url "https://keychain.jfrog.io/artifactory/keychain-core-release-maven/"
+        }
+		maven {
+            url "https://jitpack.io"
+        }
+    }
+    dependencies {
+
+        modules {
+            module("com.google.android:flexbox") {
+                replacedBy("com.google.android.flexbox:flexbox")
+            }
         }
     }
 }
