@@ -12,7 +12,7 @@ public class KeychainApp extends KeychainApplication {
     public static final String PROPERTY_MQTT_HOST = "mqtt.host";
     public static final String PROPERTY_MQTT_PORT = "mqtt.port";
     public static final String PROPERTY_MQTT_CHANNEL_PAIRING = "mqtt.channel.pairing";
-    public static final String PROPERTY_MQTT_CHANNEL_CHATS = "mqtt.channel.transfer";
+    public static final String PROPERTY_MQTT_CHANNEL_CHATS = "mqtt.channel.chat";
     public static final String PROPERTY_TRUSTED_DIRECTORY_PREFIX = "trusted.directory.domain.prefix";
     public static final String PROPERTY_TRUSTED_DIRECTORY_HOST = "trusted.directory.host";
     public static final String PROPERTY_TRUSTED_DIRECTORY_PORT = "trusted.directory.port";
@@ -25,7 +25,11 @@ public class KeychainApp extends KeychainApplication {
         Log.d(TAG, "onCreate()");
         super.onCreate();
 
-        mqttService = new MqttService(getApplicationContext().getDir("mqtt", MODE_PRIVATE).getAbsolutePath(), getApplicationProperty(KeychainApp.PROPERTY_MQTT_HOST));
+        mqttService = new MqttService(
+                getApplicationContext().getDir("mqtt", MODE_PRIVATE).getAbsolutePath(),
+                getApplicationProperty(KeychainApp.PROPERTY_MQTT_HOST),
+                Integer.parseInt(getApplicationProperty(KeychainApp.PROPERTY_MQTT_PORT))
+        );
     }
 
     public MqttService getMqttRepository() { return mqttService; }

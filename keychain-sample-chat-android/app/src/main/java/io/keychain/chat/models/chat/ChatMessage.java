@@ -1,7 +1,5 @@
 package io.keychain.chat.models.chat;
 
-import java.time.LocalDateTime;
-
 public class ChatMessage {
     public String id;
 

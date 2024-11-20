@@ -3,17 +3,15 @@ package io.keychain.chat.views.contacts;
 import static io.keychain.common.Constants.CONTACT_ALREADY_EXISTS;
 import static io.keychain.common.Constants.ERROR_SETTING_CHAT_RECIPIENT;
 import static io.keychain.common.Constants.ERROR_SHOWING_CONVERSATION;
+import static io.keychain.mobile.util.Utils.QR_ID;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,9 +19,9 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -36,38 +34,32 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.keychain.chat.R;
-import io.keychain.chat.models.chat.User;
+import io.keychain.chat.models.chat.Chat;
+import io.keychain.chat.models.chat.UserSource;
 import io.keychain.chat.views.TabbedActivity;
 import io.keychain.chat.views.qrcode.QrCodeActivity;
 import io.keychain.chat.viewmodel.TabbedViewModel;
-import io.keychain.common.Constants;
 import io.keychain.mobile.util.Utils;
 
 @UiThread
 public class ContactMainFragment extends Fragment {
     private static final String TAG = "ContactMainFragment";
-    public static final String PAIRING_USING_TRUSTED_DIRECTORY = "Pairing using trusted directory. Please wait ...";
-    public static final String ID = "id";
-    public static final String ERROR_WHILE_PARSING_QR_CODE_JSON = "Error while parsing QR Code JSON";
-    private ContactViewAdapter adapter;
-    private ListView listView;
+    private static final String PAIRING_USING_TRUSTED_DIRECTORY = "Pairing using trusted directory. Please wait ...";
+    private static final String ERROR_WHILE_PARSING_QR_CODE_JSON = "Error while parsing QR Code JSON";
+
     private ActivityResultLauncher<Intent> launcher;
     private TabbedViewModel viewModel;
-    private Bitmap bm;
-    private String payR;
     private Context context;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public ContactMainFragment() {
-        // Required empty public constructor
-    }
+    public ContactMainFragment() { }
 
     public static ContactMainFragment newInstance() {
         return new ContactMainFragment();
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
         this.context = context;
@@ -107,43 +99,43 @@ public class ContactMainFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.contactQr);
 
         // Bottom segment
-        listView = view.findViewById(R.id.contactList);
-        adapter = new ContactViewAdapter(requireActivity(), R.layout.contact_row, new ArrayList<>());
+        ListView listView = view.findViewById(R.id.contactList);
+
+        final ContactViewAdapter adapter = new ContactViewAdapter(requireActivity(), R.layout.contact_row, new ArrayList<>());
         listView.setAdapter(adapter);
 
         FloatingActionButton buttonTrustedDirectory = view.findViewById(R.id.buttonTrustedDirectory);
         buttonTrustedDirectory.setOnClickListener(v -> {
-            executorService.execute(() -> {
-                viewModel.pairUsingTrustedDirectory();
-            });
-
-            Toast.makeText(context, PAIRING_USING_TRUSTED_DIRECTORY, Toast.LENGTH_LONG).show();
+            executorService.execute(() -> viewModel.downloadTrustedDirectoryContacts());
+            Toast.makeText(context, PAIRING_USING_TRUSTED_DIRECTORY, Toast.LENGTH_SHORT).show();
         });
 
         FloatingActionButton buttonQrScanner = view.findViewById(R.id.buttonAddContactQr);
         buttonQrScanner.setOnClickListener(v -> launcher.launch(new Intent(getActivity(), QrCodeActivity.class)));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                try {
-                    FragmentManager fm = getFragmentManager();
-
-                    User user = adapter.getItem(position);
-
+        listView.setOnItemClickListener((adapterView, view1, position, l) -> {
+            try {
+                ChatUser user = adapter.getItem(position);
+                // Only do something if we're paired
+                if (user != null && user.isChattable) {
                     Log.d(TAG, "Selecting contact at position " + position);
-
                     showConversationFragment(user);
-                } catch (Exception e) {
-                    Log.e(TAG, ERROR_SETTING_CHAT_RECIPIENT, e);
                 }
+            } catch (Exception e) {
+                Log.e(TAG, ERROR_SETTING_CHAT_RECIPIENT, e);
+            }
+        });
+
+        viewModel.getTrustedDirectoryResult().observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null) {
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
             }
         });
 
         // Live data observe
-        viewModel.getUserContacts().observe(getViewLifecycleOwner(), contacts -> {
-            // TODO: there is a case getActivity() is null if menu changes off ContactsMainFragment at the same time contacts list is updated
-            adapter = new ContactViewAdapter(requireActivity(), R.layout.contact_row, contacts);
+        viewModel.getChatContacts().observe(getViewLifecycleOwner(), contacts -> {
+            adapter.clear();
+            adapter.addAll(contacts);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         });
@@ -155,34 +147,20 @@ public class ContactMainFragment extends Fragment {
                 tvUri.setText(R.string.contact_top_uri);
                 imageView.setImageResource(R.mipmap.ic_launcher);
             } else {
-
-                JSONObject jsonObject = new JSONObject();
-
                 try {
                     tvName.setText(persona.getName());
                     tvSName.setText(persona.getSubName());
                     String strURI = persona.getUri().toString().substring(0, 14) + "....";
                     tvUri.setText(strURI);
-
-                    jsonObject.put("id", persona.getUri().toString());
-                    jsonObject.put("firstName", persona.getName());
-                    jsonObject.put("lastName", persona.getSubName());
                 } catch (Exception e) {
                     Log.e(TAG, "Error getting persona data: " + e.getMessage());
                 }
 
-                payR = jsonObject.toString();
-
-                Log.i(TAG, "QR Code data:");
-                Log.i(TAG, payR);
-
                 try {
-                    bm = Utils.GetQrCode(payR, 300, 300);
+                    imageView.setImageBitmap(Utils.GetQrCode(persona, 300, 300));
                 } catch (Exception e) {
                     Log.e(TAG, "Exception getting QR code: " + e.getMessage());
                 }
-
-                imageView.setImageBitmap(bm);
             }
         });
 
@@ -191,10 +169,10 @@ public class ContactMainFragment extends Fragment {
             Intent intent = result.getData();
             if (intent != null && intent.hasExtra(QrCodeActivity.JSON_EXTRA)) {
                 String json = intent.getStringExtra(QrCodeActivity.JSON_EXTRA);
-                if (!json.isEmpty()) {
+                if (json != null && !json.isEmpty()) {
                     try {
                         JSONObject jobj = new JSONObject(json);
-                        String url = jobj.getString(ID);
+                        String url = jobj.getString(QR_ID);
 
                         if (viewModel.contactExists(url)) {
                             Toast.makeText(getActivity(), CONTACT_ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
@@ -203,7 +181,7 @@ public class ContactMainFragment extends Fragment {
 
                         Toast.makeText(getActivity(), json, Toast.LENGTH_SHORT).show();
 
-                        viewModel.pair(url);
+                        viewModel.pair(url, UserSource.QR_CODE);
                     } catch (JSONException e){
                         Log.e(TAG, ERROR_WHILE_PARSING_QR_CODE_JSON);
                     }
@@ -212,17 +190,14 @@ public class ContactMainFragment extends Fragment {
         });
     }
 
-    private void showConversationFragment(User user) {
+    private void showConversationFragment(ChatUser user) {
         try {
             TabbedActivity tabbedActivity = (TabbedActivity) ContactMainFragment.this.context;
-            viewModel.setChatRecipient(user);
 
-            tabbedActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tabbedActivity.showConversationView();
-                }
-            });
+            Chat chat = viewModel.setChatByFacade(user);
+            if (chat == null) return;
+
+            tabbedActivity.runOnUiThread(() -> tabbedActivity.showConversationView(chat));
         } catch (Exception e) {
             Log.e(TAG, ERROR_SHOWING_CONVERSATION, e);
             Toast.makeText(context, ERROR_SHOWING_CONVERSATION, Toast.LENGTH_SHORT).show();

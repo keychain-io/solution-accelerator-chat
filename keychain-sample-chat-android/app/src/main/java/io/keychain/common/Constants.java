@@ -32,13 +32,14 @@ public class Constants {
     public static final String USERS = "users";
     public static final String URI = "uri";
     public static final String STATUS = "status";
+    public static final String SOURCE = "source";
     public static final String LAST_NAME = "lastName";
     public static final String FIRST_NAME = "firstName";
     public static final String UPDATING_USER_PROFILE = "Updating user profile: ";
     public static final String ERROR_SAVING_USER_PROFILE = "Error saving user profile: ";
     public static final String SUCCESSFULLY_INSERTED_CHAT_USER = "Successfully inserted chat user: ";
     public static final String PHOTO = "photo";
-    public static final String INSERTEING_CHAT_USER = "Inserteing chat user: ";
+    public static final String INSERTING_CHAT_USER = "Inserteing chat user: ";
     public static final String CREATING_CHAT_DATABASE = "Creating chat database: ";
     public static final String ERROR_READING = "Error reading ";
     public static final String SUCCESSFULLY_INSERTED_MESSAGE = "Successfully inserted message";

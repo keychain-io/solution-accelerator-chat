@@ -60,13 +60,15 @@ public class MqttService {
     private String clientId;
     private final String persistencePath;
     private final String host;
+    private final int port;
 
-    public MqttService(String persistencePath, String host) {
+    public MqttService(String persistencePath, String host, int port) {
         topicCallbacks = new HashMap<>();
         status = ConnectionStatus.CLOSED;
         listeners = new HashSet<>();
         this.persistencePath = persistencePath;
         this.host = host;
+        this.port = port;
 
         // 1 worker thread, so all callbacks are sequential
         taskRunner = new TaskRunner();
@@ -115,7 +117,7 @@ public class MqttService {
         }
 
         try {
-            mqttClient = new MqttAsyncClient("tcp://" + host, clientId, persistence);
+            mqttClient = new MqttAsyncClient("tcp://" + host + ":" + port, clientId, persistence);
         } catch (MqttException e) {
             Log.e(TAG, "Exception creating async client: " + e.getMessage());
             return;

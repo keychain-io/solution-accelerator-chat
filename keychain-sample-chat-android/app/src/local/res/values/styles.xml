@@ -1,6 +1,0 @@
-<resources>
-    <style name="EnvironmentLabelTheme" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
-        <item name="android:textColor">#cccccc</item>
-        <item name="android:textSize">12dp</item>
-    </style>
-</resources>

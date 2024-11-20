@@ -1,7 +1,7 @@
 package io.keychain.chat.views.chats;
 
-import static io.keychain.chat.R.*;
-import static io.keychain.common.Constants.ALL;
+import static io.keychain.chat.R.id;
+import static io.keychain.chat.R.layout;
 import static io.keychain.common.Constants.UNABLE_TO_GET_ACTIVE_PERSONA_OR_IT_S_URI;
 
 import android.content.Context;
@@ -10,42 +10,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import io.keychain.chat.R;
+import java.util.Locale;
 
 import io.keychain.chat.models.chat.Chat;
-import io.keychain.chat.models.chat.User;
-import io.keychain.chat.viewmodel.TabbedViewModel;
-import io.keychain.common.Constants;
-import io.keychain.core.Persona;
-import io.keychain.core.PersonaStatus;
 
-public class ChatsAdapter extends ArrayAdapter<Chat> {
+public class ChatsAdapter extends ArrayAdapter<ChatsAdapter.ChatRoomDetails> {
     private static final String TAG = "ChatsAdapter";
-    private TabbedViewModel viewModel;
-    private Context context;
-    private List<Chat> chatsList;
-    private Map<String, User> usersMap;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(Locale.JAPAN).withZone(ZoneId.systemDefault());
 
-    public ChatsAdapter(Context context, TabbedViewModel viewModel){
-        super(context, layout.chats_row, viewModel.getChatList());
+    public static class ChatRoomDetails {
+        public ChatRoomDetails(Chat c, String n, String l) { this.chat = c; this.name = n; this.lastMessage = l; }
+        public Chat chat;
+        public String name;
+        public String lastMessage;
+    }
 
-        this.context = context;
-        this.viewModel = viewModel;
-        this.chatsList = viewModel.getChatList();
-        this.usersMap = viewModel.getUserMap();
+    public ChatsAdapter(Context context, List<ChatRoomDetails> chatRooms){
+        super(context, layout.chats_row, chatRooms);
     }
 
     @NonNull
@@ -56,35 +45,19 @@ public class ChatsAdapter extends ArrayAdapter<Chat> {
         }
 
         try {
-            Chat chat = getItem(position);
-
-            Persona persona = viewModel.getActivePersona().getValue();
-            String myUri = persona.getUri().toString();
-
-            User user;
-
-            if (myUri.equals(chat.participantIds.get(0))) {
-                user = usersMap.get(chat.participantIds.get(1));
+            ChatRoomDetails chatRoomDetails = getItem(position);
+            if (chatRoomDetails == null) {
+                Log.e(TAG, "Could not retrieve chat room details for position");
             } else {
-                user = usersMap.get(chat.participantIds.get(0));
-            }
-
-            if (user != null) {
                 //ImageView imageView = convertView.findViewById(id.profile_pic);
                 TextView userName = convertView.findViewById(id.chatName);
                 TextView lastMsg = convertView.findViewById(id.lastMessage);
                 TextView time = convertView.findViewById(id.messageTime);
 
-                //imageView.setImageResource();
-                userName.setText(user.getName());
+                userName.setText(chatRoomDetails.name);
+                lastMsg.setText(chatRoomDetails.lastMessage);
 
-                lastMsg.setText((chat.lastMsg != null && !chat.lastMsg.trim().isEmpty())
-                                        ? viewModel.decrypt(chat.lastMsg)
-                                        : "");
-
-                time.setText(chat.timestamp.toLocalTime().toString());
-            } else {
-                Toast.makeText(context, "Error getting chat user.", Toast.LENGTH_SHORT).show();
+                time.setText(formatter.format(chatRoomDetails.chat.timestamp.toLocalTime()));
             }
         } catch (Exception e) {
             Log.w(TAG, UNABLE_TO_GET_ACTIVE_PERSONA_OR_IT_S_URI, e);

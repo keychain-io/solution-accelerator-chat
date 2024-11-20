@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import io.keychain.chat.R;
 import io.keychain.chat.models.CreatePersonaResult;
-import io.keychain.chat.viewmodel.TabbedViewModel;
+import io.keychain.chat.viewmodel.PersonaViewModel;
 import io.keychain.mobile.util.Utils;
 
 /**
@@ -22,7 +22,7 @@ import io.keychain.mobile.util.Utils;
  */
 public class PersonaDialog extends DialogFragment {
     private static final String TAG = "PersonaDialog";
-    private TabbedViewModel viewModel;
+    private PersonaViewModel viewModel;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_persona_dialog, container, false);
@@ -31,20 +31,23 @@ public class PersonaDialog extends DialogFragment {
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        viewModel = new ViewModelProvider(requireActivity()).get(PersonaViewModel.class);
+
         EditText evLname = view.findViewById(R.id.editTextTextPersonLName);
         EditText evFname = view.findViewById(R.id.editTextTextPersonFName);
         evLname.setText("");
         evFname.setText("");
-
+        Button createButton = view.findViewById(R.id.createPersonaButton);
         Button cxlButton = view.findViewById(R.id.cancelCreateButton);
+
+
+        // Cancel takes us back
         cxlButton.setOnClickListener(view1 -> {
             getDialog().dismiss();
         });
 
-        viewModel = new ViewModelProvider(requireActivity()).get(TabbedViewModel.class);
-
-        Button createButton = view.findViewById(R.id.createPersonaButton);
-
+        // Create attempts to use results to create persona
+        // TODO: immediately return after quick validation checks, and do the create+toast async
         createButton.setOnClickListener(view12 -> {
             // sanitize
             String lastName = Utils.SanitizeInput(evLname.getText().toString());

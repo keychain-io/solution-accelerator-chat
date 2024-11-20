@@ -22,7 +22,7 @@ import static io.keychain.common.Constants.GETTING_CHAT_USERS;
 import static io.keychain.common.Constants.GETTING_MESSAGE_FOR_RECORD_ID;
 import static io.keychain.common.Constants.GETTING_PLATFORM_USER_FOR_ID;
 import static io.keychain.common.Constants.ID;
-import static io.keychain.common.Constants.INSERTEING_CHAT_USER;
+import static io.keychain.common.Constants.INSERTING_CHAT_USER;
 import static io.keychain.common.Constants.INSERTING_CHAT;
 import static io.keychain.common.Constants.INSERTING_MESSAGE;
 import static io.keychain.common.Constants.INVALID_RECEIVER_ID;
@@ -38,6 +38,7 @@ import static io.keychain.common.Constants.RECEIVER_ID;
 import static io.keychain.common.Constants.SENDER_ID;
 import static io.keychain.common.Constants.SENDER_ID_IS_NOT_VALID;
 import static io.keychain.common.Constants.SEND_OR_RCVD;
+import static io.keychain.common.Constants.SOURCE;
 import static io.keychain.common.Constants.STATUS;
 import static io.keychain.common.Constants.SUCCESSFULLY_INSERTED_CHAT;
 import static io.keychain.common.Constants.SUCCESSFULLY_INSERTED_CHAT_USER;
@@ -98,7 +99,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     public static final String CHATS_SQL = "chats.sql";
     public static final String ATTEMPTING_TO_COPY_DATABASE = "Attempting to copy database";
     public static final int DB_VERSION = 1;
-    public static final String DATABASE_CANNOT_BE_OPENED = "For some reason the Database cannot be opened!!!!!!!!!!";
+    public static final String DATABASE_CANNOT_BE_OPENED = "For some reason the Database cannot be opened";
     public static final String FAILED_TO_OPEN_CHAT_DATABASE = "Failed to open chat database.";
     public static final String ERROR_CREATING_DATABASE_TABLES = "Error creating database tables.";
     public static final String CREATING_DATABASE_TABLES = "Creating database tables.";
@@ -119,8 +120,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
         if (android.os.Build.VERSION.SDK_INT >= 17) {
             dbLocation = context.getApplicationInfo().dataDir + DATABASES;
-        }
-        else {
+        } else {
             dbLocation = DATA_DATA + context.getPackageName() + DATABASES;
         }
 
@@ -150,9 +150,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
             // execSQL can only execute a single STATEMENT. So we have to split the
             // SQL file into individual queries and call execSQL several times
-            String[] scripts = script.split("[;]");
-
-            for (String sql : scripts) {
+            for (String sql : script.split(";")) {
                 if (sql.isEmpty())
                     continue;
 
@@ -207,7 +205,6 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
     /**
      * Check if the database file exists
-     * @return
      */
     private boolean ifDBExists() {
         String dbPath = dbLocation + CHATS_DB;
@@ -248,12 +245,10 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
                 return Optional.empty();
             }
 
-            String inUris = String.join(", ", filterBy);
-
-            //Cursor cursor = db.rawQuery("SELECT * FROM users WHERE uri IN (?)", new String[] {inUris});
             Cursor cursor = db.rawQuery("SELECT * FROM users", null);
-
-            return getPlatformUsers(cursor);
+            Optional<Map<String, User>> map = getPlatformUsers(cursor);
+            cursor.close();
+            return map;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_PLATFORM_USERS, ex);
         }
@@ -274,9 +269,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM users WHERE id = ?",
                                         new String[] {recordId});
 
-            return getPlatformUsers(cursor)
-                    .map(users -> users.values().stream().findFirst())
-                    .orElse(Optional.empty());
+            Optional<User> user = getPlatformUsers(cursor).flatMap(users -> users.values().stream().findFirst());
+            cursor.close();
+            return user;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_PLATFORM_USER_FOR_RECORD_ID + recordId, ex);
             return Optional.empty();
@@ -284,7 +279,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     }
 
     @Override
-    public Optional<User> getPlatformUser(String firstName, String lastName) {
+    public Optional<List<User>> getPlatformUser(String firstName, String lastName) {
         try {
             Log.i(TAG, GETTING_PLATFORM_USER + firstName + " " + lastName);
 
@@ -296,11 +291,12 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM users WHERE firstName = ? AND lastName = ?",
                                         new String[] {firstName, lastName});
 
-            User user = getPlatformUsers(cursor)
-                    .flatMap(users -> users.values().stream().findFirst())
-                    .orElse(null);
+            Optional<List<User>> users = getPlatformUsers(cursor)
+                    .map(Map::values)
+                    .map(ArrayList::new);
+            cursor.close();
 
-            return user != null ? Optional.of(user) : Optional.empty();
+            return users;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_PLATFORM_USER_FOR + firstName + " " + lastName, ex);
             return Optional.empty();
@@ -319,9 +315,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
             Cursor cursor = db.rawQuery("SELECT * FROM users WHERE uri = ?", new String[] {uri});
 
-            return getPlatformUsers(cursor)
-                    .map(users -> users.values().stream().findFirst())
-                    .orElse(Optional.empty());
+            Optional<User> user = getPlatformUsers(cursor).flatMap(users -> users.values().stream().findFirst());
+            cursor.close();
+            return user;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_PLATFORM_USER_FOR_RECORD_ID + uri, ex);
             return Optional.empty();
@@ -329,17 +325,16 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     }
 
     @Override
-    public Optional<String> saveUserProfile(String firstName, String lastName, int status, String uri, Bitmap image) {
+    public Optional<String> saveUserProfile(String firstName, String lastName, int status, int source, String uri, Bitmap image) {
         try {
-            Log.i(TAG, INSERTEING_CHAT_USER + firstName + " " + lastName);
+            Log.i(TAG, INSERTING_CHAT_USER + firstName + " " + lastName);
 
             if (db == null || !dbInitialized) {
                 Log.w(TAG, NO_DATABASE_CONNECTION);
                 return Optional.empty();
             }
 
-            User user = getPlatformUser(firstName, lastName)
-                    .orElse(null);
+            User user = getPlatformUserByUri(uri).orElse(null);
 
             if (user != null) {
                 // If user already exists, return the id
@@ -361,6 +356,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             contentValues.put(FIRST_NAME, firstName);
             contentValues.put(LAST_NAME, lastName);
             contentValues.put(STATUS, status);
+            contentValues.put(SOURCE, source);
             contentValues.put(URI, getUriToUse(uri));
             contentValues.put(PHOTO, imagesPath);
 
@@ -384,8 +380,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     private String getUriToUse(String uri) {
         // uri must be unique, the UUID will be replace later when the actual uri is
         // received by Keychain Gateway
-        String uriToUse = (uri != null && !uri.trim().isEmpty()) ? uri : UUID.randomUUID().toString();
-        return uriToUse;
+        return (uri != null && !uri.trim().isEmpty()) ? uri : UUID.randomUUID().toString();
     }
 
     @Override
@@ -398,10 +393,8 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
                 return false;
             }
 
-            Cursor cursor = db.rawQuery("SELECT * FROM users WHERE firstName = ? AND lastName = ?",
-                                        new String[] {firstName, lastName});
-
-            if (cursor.getCount() > 0) {
+            Optional<User> user = getPlatformUserByUri(uri);
+            if (user.isPresent()) {
                 ContentValues contentValues = new ContentValues();
 
                 contentValues.put(FIRST_NAME, firstName);
@@ -411,8 +404,8 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
                 long rc = db.update(USERS,
                                     contentValues,
-                                    "firstName=? AND lastName=?",
-                                    new String[]{firstName, lastName});
+                                    "uri=?",
+                                    new String[] { uri });
 
                 if (rc > 0) {
                     Log.i(TAG, SUCCESSFULLY_UPDATED_USER_PROFILE + firstName + " " + lastName);
@@ -433,8 +426,6 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     @Override
     public Optional<List<Chat>> getAllChats(String senderId, Set<String> excludePersonaIds) {
         try {
-            List<Chat> chats = new ArrayList<>();
-
             Log.i(TAG, GETTING_ALL_CHATS_FOR_SENDER_ID + senderId);
 
             if (db == null || !dbInitialized) {
@@ -447,17 +438,14 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM chats WHERE participantIds LIKE ?",
                                         new String[] {"%" + senderId + "%"});
 
-            chats = getChats(cursor)
-                    .orElse(new ArrayList<>());
 
             // Filter out chats where my other personas are participants
-            chats = chats
+            List<Chat> chats = getChats(cursor)
+                    .orElse(new ArrayList<>())
                     .stream()
-                    .filter(chat -> {
-                        return !excludePersonaIds.contains(chat.participantIds.get(0)) && !excludePersonaIds.contains(chat.participantIds.get(1));
-                    })
+                    .filter(chat -> !excludePersonaIds.contains(chat.participantIds.get(0)) && !excludePersonaIds.contains(chat.participantIds.get(1)))
                     .collect(Collectors.toList());
-
+            cursor.close();
             return Optional.of(chats);
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_CHATS_FOR_SENDER_ID + senderId, ex);
@@ -479,9 +467,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM chats WHERE participantIds LIKE ? AND participantIds LIKE ?",
                                         new String[] {"%" + senderId + "%", "%" + receiverId + "%"});
 
-            return getChats(cursor)
-                    .map(chats -> chats.stream().findFirst())
-                    .orElse(Optional.empty());
+            Optional<Chat> chat = getChats(cursor).flatMap(chats -> chats.stream().findFirst());
+            cursor.close();
+            return chat;
 
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_PLATFORM_USERS, ex);
@@ -540,7 +528,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM chats WHERE id = ?",
                                         new String[] {id});
 
-            if (cursor.getCount() > 0) {
+            int cursorCount = cursor.getCount();
+            cursor.close();
+            if (cursorCount > 0) {
                 ContentValues contentValues = new ContentValues();
 
                 contentValues.put(LAST_MSG, lastMessage);
@@ -577,7 +567,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM messages WHERE chatId = ?",
                                         new String[] {chat.id});
 
-            return getMessages(cursor);
+            Optional<List<ChatMessage>> messages = getMessages(cursor);
+            cursor.close();
+            return messages;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_MESSAGES_FOR_CHAT_ID + chat.id, ex);
         }
@@ -598,7 +590,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM messages WHERE senderId = ? OR receiverId = ?",
                                         new String[] {uri, uri});
 
-            return getMessages(cursor);
+            Optional<List<ChatMessage>> messages = getMessages(cursor);
+            cursor.close();
+            return  messages;
         } catch (Exception ex) {
             Log.e(TAG, ERROR_GETTING_ALL_CHAT_MESSAGES_WHERE_PARTICIPANT_IS + uri, ex);
         }
@@ -619,12 +613,11 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
             Cursor cursor = db.rawQuery("SELECT * FROM messages WHERE id = ?",
                                         new String[] {recordId});
 
-            return getMessages(cursor)
-                    .map(chatMessages -> chatMessages.stream().findFirst())
-                    .orElse(Optional.empty());
-
+            Optional<ChatMessage> message = getMessages(cursor).flatMap(chatMessages -> chatMessages.stream().findFirst());
+            cursor.close();
+            return message;
         } catch (Exception ex) {
-            Log.e(TAG, "Error getting message for recoredId: " + recordId, ex);
+            Log.e(TAG, "Error getting message for recordId: " + recordId, ex);
             return Optional.empty();
         }
     }
@@ -698,7 +691,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
     private String saveToInternalStorage(Bitmap bitmapImage) throws Exception {
         ContextWrapper cw = new ContextWrapper(context);
-        // path to /data/data/yourapp/app_data/imageDir
+        // path to /data/data/yourApp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         // Create imageDir
         File imagePath = new File(directory, UUID.randomUUID().toString() + ".jpg");
@@ -715,7 +708,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
     }
 
     private Bitmap loadImageFromStorage(String path) throws FileNotFoundException {
-        return BitmapFactory.decodeStream(new FileInputStream(new File(path)));
+        return BitmapFactory.decodeStream(new FileInputStream(path));
     }
 
     private Optional<Map<String, User>>  getPlatformUsers(Cursor cursor) {
@@ -723,7 +716,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                String uri = cursor.getString(5);
+                String uri = cursor.getString(6);
 
                 if (uri == null) {
                     continue;
@@ -742,8 +735,9 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
                              cursor.getString(1),
                              cursor.getString(2),
                              cursor.getInt(3),
-                             cursor.getString(4),
-                             cursor.getString(5));
+                             cursor.getInt(4),
+                             cursor.getString(5),
+                             cursor.getString(6));
     }
 
     private Optional<List<Chat>> getChats(Cursor cursor) {
@@ -773,7 +767,7 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
 
         String[] parts = cursor.getString(1).split("[|]");
 
-        if (parts != null && parts.length > 1) {
+        if (parts.length > 1) {
             chat.participantIds.add(parts[0]);
             chat.participantIds.add(parts[1]);
         }
@@ -782,7 +776,6 @@ public class SQLiteDBService extends SQLiteOpenHelper implements ChatRepository 
         chat.timestamp = LocalDateTime.parse(cursor.getString(3));
         return chat;
     }
-
 
     private Optional<List<ChatMessage>> getMessages(Cursor cursor) {
         List<ChatMessage> messages = new ArrayList<>();

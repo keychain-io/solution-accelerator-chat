@@ -4,20 +4,18 @@ import com.stfalcon.chatkit.commons.models.IUser;
 
 import java.util.Date;
 
-
 public class Message implements IMessage {
-
-    /*...*/
-    private String id;
     public IUser author;
     public Date createdAt;
     public String text;
+    public String id;
 
-    public Message(String text, IUser author, Date created)
+    public Message(String text, IUser author, Date created, String id)
     {
         this.author = author;
         this.text = text;
         this.createdAt = created;
+        this.id = id;
     }
 
     @Override

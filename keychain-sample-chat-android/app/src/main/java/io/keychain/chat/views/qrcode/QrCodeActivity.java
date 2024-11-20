@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -95,7 +94,7 @@ public class QrCodeActivity extends BaseActivity implements ZXingScannerView.Res
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
-                intent.putExtra("QRJSON", "");
+                intent.putExtra(JSON_EXTRA, "");
                 setResult(Activity.RESULT_CANCELED, intent);
                 finish();
             }

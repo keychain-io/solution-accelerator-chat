@@ -10,8 +10,11 @@
 
     <TextView
         android:id="@+id/nameText"
-        android:layout_width="150dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="abcdefghiasdfjkl;asdfjkld"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="?attr/colorOnBackground"
         android:textSize="16sp"
@@ -19,10 +22,22 @@
 
     <TextView
         android:id="@+id/subNameText"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="abcdefghiasdfjkl;asdfjkld"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="?attr/colorOnBackground"
+        android:textSize="16sp"
+        android:layout_marginVertical="10dp" />
+
+    <TextView
+        android:id="@+id/sourceText"
+        android:layout_width="12dp"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/amber_500"
         android:textSize="16sp"
         android:layout_marginVertical="10dp" />
 
@@ -30,5 +45,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/pairRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/pair_button"
+        android:text="Pair" />
+
+    <Button
+        android:id="@+id/pairAccept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:backgroundTint="@color/accept_pair_button"
+        android:visibility="gone"
+        android:text="Accept" />
+
+    <Button
+        android:id="@+id/pairReject"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/reject_pair_button"
+        android:visibility="gone"
+        android:text="Reject" />
 
 </LinearLayout>

@@ -1,6 +1,5 @@
 package io.keychain.chat.views.chats;
 
-import static io.keychain.common.Constants.ERROR_GETTING_PLATFORM_USER_FOR;
 import static io.keychain.common.Constants.ERROR_SETTING_CHAT_RECIPIENT;
 import static io.keychain.common.Constants.ON_DETACH;
 import static io.keychain.common.Constants.ON_STOP;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -20,36 +18,49 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.keychain.chat.R;
 import io.keychain.chat.models.chat.Chat;
 import io.keychain.chat.models.chat.User;
 import io.keychain.chat.viewmodel.TabbedViewModel;
 import io.keychain.chat.views.TabbedActivity;
-import io.keychain.chat.views.contacts.ContactMainFragment;
-import io.keychain.core.Persona;
 
 public class ChatsFragment extends Fragment {
     private static final String TAG = "ChatsFragment";
-    public static final String ERROR_SHOWING_CHAT = "Error showing chat. ";
+    public static final String EXTRAS_URI = "uri";
     private TabbedViewModel viewModel;
     private Context context;
-
-    private ListView listView;
     private ChatsAdapter adapter;
+    private String loggedInUserUri;
 
-    public ChatsFragment() {
-        // Required empty public constructor
-    }
+    public ChatsFragment() { }
 
-    public static ChatsFragment newInstance() {
-        return new ChatsFragment();
+    public static ChatsFragment newInstance(String uri)
+    {
+        ChatsFragment chatsFragment = new ChatsFragment();
+        Bundle args = new Bundle();
+        args.putString(EXTRAS_URI, uri);
+        chatsFragment.setArguments(args);
+        return chatsFragment;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
         this.context = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            loggedInUserUri = getArguments().getString(EXTRAS_URI, null);
+        }
     }
 
     @Nullable
@@ -57,8 +68,6 @@ public class ChatsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(TabbedViewModel.class);
-        viewModel.loadChats();
-
         return inflater.inflate(R.layout.chats_fragment, container, false);
     }
 
@@ -78,43 +87,58 @@ public class ChatsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.d(TAG, ON_VIEW_CREATED);
 
-        listView = view.findViewById(R.id.chatsList);
-        adapter = new ChatsAdapter(context, viewModel);
+        final ListView listView = view.findViewById(R.id.chatsList);
+
+        // create a list of chat room details
+        adapter = new ChatsAdapter(context, createChatRoomDetails(Collections.emptyList()));
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                try {
-                    Chat chat = adapter.getItem(position);
+        viewModel.getChats().observe(this, chats -> {
+            adapter = new ChatsAdapter(context, createChatRoomDetails(chats));
+            listView.setAdapter(adapter);
+        });
 
-                    Log.d(TAG, "Selecting chat at position " + position);
-
-                    showConversationView(chat);
-                } catch (Exception e) {
-                    Log.e(TAG, ERROR_SETTING_CHAT_RECIPIENT, e);
+        listView.setOnItemClickListener((adapterView, view1, position, l) -> {
+            try {
+                Log.d(TAG, "Selecting chat at position " + position);
+                final ChatsAdapter.ChatRoomDetails chat = adapter.getItem(position);
+                if (chat == null) {
+                    Log.e(TAG, "Error getting chat");
+                    return;
                 }
-            }
 
-            private void showConversationView(Chat chat) {
-                try {
-                    TabbedActivity tabbedActivity = (TabbedActivity) ChatsFragment.this.context;
-                    Persona persona = viewModel.getActivePersona().getValue();
-                    String recipientId = !chat.participantIds.get(0).equals(persona.getUri().toString())
-                            ? chat.participantIds.get(0)
-                            : chat.participantIds.get(1);
-                    User user = viewModel.getUserMap().get(recipientId);
-                    viewModel.setChatRecipient(user);
+                TabbedActivity tabbedActivity = (TabbedActivity) ChatsFragment.this.context;
 
-                    if (user == null) {
-                        throw new Exception(ERROR_GETTING_PLATFORM_USER_FOR + recipientId);
-                    }
+                // set chats
+                viewModel.setChat(chat.chat);
 
-                    tabbedActivity.runOnUiThread(() -> tabbedActivity.showConversationView());
-                } catch (Exception e) {
-                    Log.e(TAG, ERROR_SHOWING_CHAT, e);
-                }
+                // switch fragments
+                tabbedActivity.runOnUiThread(() -> tabbedActivity.showConversationView(chat.chat));
+            } catch (Exception e) {
+                Log.e(TAG, ERROR_SETTING_CHAT_RECIPIENT, e);
             }
         });
+    }
+
+    private List<ChatsAdapter.ChatRoomDetails> createChatRoomDetails(List<Chat> chats) {
+        List<ChatsAdapter.ChatRoomDetails> details = new ArrayList<>(chats.size());
+        for (Chat chat : chats) {
+            final User user = viewModel.getUserNameForUri(chat
+                            .participantIds
+                            .stream()
+                            .filter(s -> !s.equals(loggedInUserUri))
+                            .findFirst()
+                            .orElse(null));
+            if (user == null) {
+                Log.w(TAG, "Could not find user for chat ID " + chat.id);
+            } else {
+                details.add(new ChatsAdapter.ChatRoomDetails(
+                        chat,
+                        user.getName(),
+                        viewModel.decrypt(chat.lastMsg)
+                ));
+            }
+        }
+        return details;
     }
 }

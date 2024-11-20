@@ -20,15 +20,12 @@ public class ChannelMessage {
     public static final String ERROR_CREATING_PAIR_RESPONSE = "Error creating pair response: ";
     public static final String ERROR_CREATING_PAIR_REQUEST = "Error creating pair request: ";
 
-    public static JSONObject MakePairAck(Persona me, JSONObject respondTo) {
+    public static JSONObject MakePairAck(Persona me, String receiverId) {
         JSONObject resp = new JSONObject();
 
         try {
-            if (!respondTo.getString(MSG_TYPE).equals(PAIR_RESPONSE))
-                return null;
-
             resp.put(MSG_TYPE, PAIR_ACK);
-            resp.put(RECEIVER_ID, respondTo.getString(SENDER_ID));
+            resp.put(RECEIVER_ID, receiverId);
             resp.put(SENDER_ID, me.getUri().toString());
             resp.put(SENDER_NAME, me.getName());
             resp.put(SENDER_SUB_NAME, me.getSubName());
@@ -41,15 +38,12 @@ public class ChannelMessage {
         return null;
     }
 
-    public static JSONObject MakePairResponse(Persona me, JSONObject respondTo) {
+    public static JSONObject MakePairResponse(Persona me, String receiverId) {
         JSONObject resp = new JSONObject();
 
         try {
-            if (!respondTo.getString(MSG_TYPE).equals(PAIR_REQUEST))
-                return null;
-
             resp.put(MSG_TYPE, PAIR_RESPONSE);
-            resp.put(RECEIVER_ID, respondTo.getString(SENDER_ID));
+            resp.put(RECEIVER_ID, receiverId);
             resp.put(SENDER_ID, me.getUri().toString());
             resp.put(SENDER_NAME, me.getName());
             resp.put(SENDER_SUB_NAME, me.getSubName());
@@ -82,9 +76,5 @@ public class ChannelMessage {
         }
 
         return null;
-    }
-
-    public static JSONObject MakePairRequest(Persona me, String requestUri) {
-        return MakePairRequest(me, requestUri, null);
     }
 }

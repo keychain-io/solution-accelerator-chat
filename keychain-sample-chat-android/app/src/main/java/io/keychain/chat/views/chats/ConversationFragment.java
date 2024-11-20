@@ -1,7 +1,5 @@
 package io.keychain.chat.views.chats;
 
-import static io.keychain.common.Constants.ALL;
-import static io.keychain.common.Constants.ERROR_GETTING_PLATFORM_USER_FOR;
 import static io.keychain.common.Constants.SOMETHING_WENT_WRONG;
 
 import android.app.Activity;
@@ -25,46 +23,61 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.keychain.chat.R;
-import io.keychain.chat.models.chat.Chat;
-import io.keychain.chat.models.chat.ChatMessage;
+import io.keychain.chat.models.chat.Message;
+import io.keychain.chat.models.chat.PairStatus;
 import io.keychain.chat.models.chat.User;
+import io.keychain.chat.models.chat.UserSource;
 import io.keychain.chat.viewmodel.TabbedViewModel;
 import io.keychain.chat.views.TabbedActivity;
-import io.keychain.chat.views.contacts.ContactMainFragment;
-import io.keychain.mobile.util.Utils;
 
 @UiThread
 public class ConversationFragment extends Fragment implements MessageInput.InputListener {
     private static final String TAG = "ConversationFragment";
-    public static final String NO_CHAT_SELECTED_OR_CREATED = "No chat selected or created.";
-    public static final String UNABLE_TO_SEND_MESSAGE = "Unable to send message. Please check the logs.";
-    public static final String UNABLE_TO_GET_MY_URI = "Unable to get my uri.";
+    public static final String EXTRAS_PARTICIPANTS = "participants";
+
     private TabbedViewModel viewModel;
     private Context context;
+    private final Set<String> msgIds = new HashSet<>();
 
-    // GUI models
-    private MessagesList messageList;
-    private ImageLoader imageLoader;
+    private final List<String> participantIds = new ArrayList<>();
 
-    private User me = new User("0", "me", "", 5, null, "");
+    // TODO: remove, use the actual persona user
+    private final User me = new User("0", "me", "", PairStatus.PAIRED.getCode(), UserSource.DEFAULT.getCode(), "", "");
 
-    public ConversationFragment() {
-        // Required empty public constructor
-    }
+    public ConversationFragment() { }
 
-    public static ContactMainFragment newInstance() {
-        return new ContactMainFragment();
+    public static ConversationFragment newInstance(ArrayList<String> participantIds)
+    {
+        ConversationFragment fragment = new ConversationFragment();
+        Bundle args = new Bundle();
+        args.putStringArrayList(EXTRAS_PARTICIPANTS, participantIds);
+        fragment.setArguments(args);
+        return fragment;
     }
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
         this.context = context;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            participantIds.addAll(Objects.requireNonNull(getArguments().getStringArrayList(EXTRAS_PARTICIPANTS)));
+        }
     }
 
     @Nullable
@@ -75,35 +88,34 @@ public class ConversationFragment extends Fragment implements MessageInput.Input
         View view = inflater.inflate(R.layout.conversation_fragment, container, false);
 
         try {
-            this.imageLoader = (imageView, url, obj) -> {
+            ImageLoader imageLoader = (imageView, url, obj) -> {
                 //Picasso.get().load(url).into(imageView);
             };
 
             viewModel = new ViewModelProvider(requireActivity()).get(TabbedViewModel.class);
 
-            messageList = view.findViewById(io.keychain.chat.R.id.messagesList);
-            viewModel.messageAdapter = new MessagesListAdapter<>(this.me.getId(), imageLoader);
-            messageList.setAdapter(viewModel.messageAdapter);
+            // GUI models
+            MessagesList messageList = view.findViewById(R.id.messagesList);
+            MessagesListAdapter<Message> messageAdapter = new MessagesListAdapter<>(this.me.getId(), imageLoader);
+            messageList.setAdapter(messageAdapter);
+
+            viewModel.getAllMessages().observe(this, messages -> {
+                if (messages != null) {
+                    msgIds.clear();
+                    msgIds.addAll(messages.stream().map(Message::getId).collect(Collectors.toList()));
+                    messageAdapter.clear();
+                    messageAdapter.addToEnd(messages, true);
+                }
+            });
+            viewModel.getLatestMessage().observe(this, message -> {
+                if (message != null && !msgIds.contains(message.getId())) {
+                    msgIds.add(message.getId());
+                    messageAdapter.addToStart(message, true);
+                }
+            });
 
             MessageInput input = view.findViewById(R.id.input);
             input.setInputListener(this);
-
-            if (viewModel.getChatRecipient() == null) {
-                // No chat recipient was selected. So default to ALL chat
-                User user = viewModel.getUserMap().get(ALL);
-                viewModel.setChatRecipient(user);
-
-                if (user == null) {
-                    throw new Exception(ERROR_GETTING_PLATFORM_USER_FOR + ALL);
-                }
-            }
-
-            for (ChatMessage chatMessage : viewModel.getMessages()) {
-                viewModel.displayMessage(chatMessage.msg,
-                                         chatMessage.senderId,
-                                         Utils.getDateTimeFromEpoc(chatMessage.timestamp),
-                                         Utils.isAllChat(chatMessage));
-            }
         } catch (Exception e) {
             Log.e(TAG, SOMETHING_WENT_WRONG, e);
         }
@@ -115,42 +127,18 @@ public class ConversationFragment extends Fragment implements MessageInput.Input
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView()");
 
-        try {
-            viewModel.setChatRecipient(null);
-        } catch (Exception e) {
-            Log.w(TAG, "Error resetting selected chat.", e);
-        }
-
         super.onDestroyView();
     }
 
     @Override
     public boolean onSubmit(CharSequence input) {
-
         Log.d(TAG, "onSubmit() called with input: " + input.toString());
         String msg = input.toString();
 
-        User recipient = viewModel.getChatRecipient();
-        Chat selectedChat = viewModel.getSelectedChat();
-
-        String myUri;
-
         try {
-            myUri = viewModel.getActivePersona().getValue().getUri().toString();
+            viewModel.handleSubmittedMessage(msg, participantIds);
         } catch (Exception e) {
-            Toast.makeText(context, UNABLE_TO_GET_MY_URI, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        String senderUri = myUri;
-        String receiverUri = myUri.equals(selectedChat.participantIds.get(0))
-                ? selectedChat.participantIds.get(1)
-                : selectedChat.participantIds.get(0);
-
-        if (viewModel.sendMessage(senderUri, receiverUri, msg)) {
-            viewModel.addToMessageList(msg, senderUri, LocalDateTime.now());
-        } else {
-            Toast.makeText(context, UNABLE_TO_SEND_MESSAGE, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             return false;
         }
 

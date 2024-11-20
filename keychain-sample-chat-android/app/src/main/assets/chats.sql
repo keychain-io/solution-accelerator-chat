@@ -3,6 +3,7 @@ CREATE TABLE users (
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
     status INTEGER NOT NULL DEFAULT 0,
+    source INTEGER NOT NULL DEFAULT 0,
     photo TEXT,
     uri TEXT UNIQUE
 );

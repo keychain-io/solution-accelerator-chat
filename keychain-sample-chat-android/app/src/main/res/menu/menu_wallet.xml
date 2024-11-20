@@ -5,8 +5,5 @@
         android:icon="@drawable/outline_logout_24"
         android:title="@string/action_logout"
         app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_prefs"
-        android:icon="@drawable/outline_settings_black_24"
-        android:title="@string/action_prefs"
-        app:showAsAction="never"/>
+
 </menu>

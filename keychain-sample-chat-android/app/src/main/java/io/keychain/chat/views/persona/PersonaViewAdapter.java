@@ -8,26 +8,27 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import io.keychain.chat.models.chat.User;
-import io.keychain.core.Persona;
+import io.keychain.core.Facade;
 import io.keychain.core.PersonaStatus;
 import io.keychain.chat.R;
-import io.keychain.exceptions.BadJniInput;
 import io.keychain.mobile.util.Utils;
 
-public class PersonaViewAdapter extends ArrayAdapter<User> {
+public class PersonaViewAdapter extends ArrayAdapter<Facade> {
     private static final String TAG = "PersonaViewAdapter";
     private final int layoutResource;
 
-    public PersonaViewAdapter(Context context, int layoutResource, List<User> personaList) {
+    public PersonaViewAdapter(Context context, int layoutResource, List<Facade> personaList) {
         super(context, layoutResource, personaList);
         this.layoutResource = layoutResource;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
 
         if (view == null) {
@@ -35,7 +36,7 @@ public class PersonaViewAdapter extends ArrayAdapter<User> {
             view = layoutInflater.inflate(layoutResource, null);
         }
 
-        User user = getItem(position);
+        Facade user = getItem(position);
 
         if (user != null) {
             TextView leftTextView = view.findViewById(R.id.nameText);
@@ -44,15 +45,15 @@ public class PersonaViewAdapter extends ArrayAdapter<User> {
 
             try {
                 if (leftTextView != null) {
-                    leftTextView.setText(user.firstName);
+                    leftTextView.setText(user.getName());
                 }
 
                 if (rightTextView != null) {
-                    rightTextView.setText(user.lastName);
+                    rightTextView.setText(user.getSubName());
                 }
 
                 if (statusView != null) {
-                    PersonaStatus status = Utils.getPersonaStatus(user.status);
+                    PersonaStatus status = Utils.getPersonaStatus(user.getStatus().getStatusCode());
                     switch (status) {
                         case CREATED:
                             statusView.setText(R.string.persona_status_created);
@@ -95,7 +96,7 @@ public class PersonaViewAdapter extends ArrayAdapter<User> {
         return view;
     }
 
-    public void deletePersona(int potision) {
+    public void deletePersona(int position) {
 
     }
 

@@ -2,12 +2,8 @@ package io.keychain.chat.models.chat;
 
 import com.stfalcon.chatkit.commons.models.IUser;
 
-import java.util.UUID;
-
-import io.keychain.core.PersonaStatus;
-
 public class User implements IUser {
-    public String id = UUID.randomUUID().toString().toUpperCase();
+    public String id;
 
     public String firstName;
 
@@ -15,16 +11,19 @@ public class User implements IUser {
 
     public int status;
 
-    public String photo;    // For later, maybe
+    public int source;    // For later, maybe
+
+    public String photo;
 
     public String uri;
 
-    public User(String id, String firstName, String lastName, int status, String photoPath, String uri) {
+    public User(String id, String firstName, String lastName, int status, int source, String photo, String uri) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.status = status;
-        this.photo = photoPath;
+        this.source = source;
+        this.photo = photo;
         this.uri = uri;
     }
 
@@ -35,20 +34,15 @@ public class User implements IUser {
 
     @Override
     public String getName() {
-        String name = (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
-        return name;
+        return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
     }
 
     @Override
     public String getAvatar() {
-        return photo;
+        return null;
     }
 
-    public String getKey() {
-        if ((status != PersonaStatus.CONFIRMED.getStatusCode()) || (uri == null || uri.isEmpty() || uri.length() < 100)) {
-            return getName();
-        }
-
-        return uri;
+    public UserSource getSource() {
+        return UserSource.fromInt(source);
     }
 }

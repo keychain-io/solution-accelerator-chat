@@ -1,5 +1,6 @@
 package io.keychain.chat.views;
 
+import android.app.Application;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -22,16 +24,18 @@ import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+
+import io.keychain.chat.KeychainApp;
+import io.keychain.chat.MqttUseCase;
 import io.keychain.chat.R;
-import io.keychain.chat.models.chat.User;
-import io.keychain.chat.viewmodel.ChatViewModel;
+import io.keychain.chat.models.chat.Chat;
 import io.keychain.chat.viewmodel.TabbedViewModel;
+import io.keychain.chat.viewmodel.TabbedViewModelFactory;
 import io.keychain.chat.views.chats.ChatsFragment;
 import io.keychain.chat.views.chats.ConversationFragment;
 import io.keychain.chat.views.contacts.ContactMainFragment;
 import io.keychain.chat.views.persona.PersonaActivity;
-import io.keychain.chat.views.persona.PersonaItemTouchHelper;
-import io.keychain.chat.views.settings.PreferencesFragment;
 import io.keychain.chat.views.settings.SettingFragment;
 import io.keychain.mobile.BaseActivity;
 import io.keychain.mobile.util.ConnectionLiveData;
@@ -39,7 +43,6 @@ import io.keychain.mobile.util.Utils;
 
 public class TabbedActivity extends BaseActivity {
     private static final String TAG = "TabbedActivity";
-    private String activePersonaUri;
     private FragmentContainerView fragmentContainerView;
     private Intent thisIntent;
     private boolean backPressed;
@@ -49,8 +52,6 @@ public class TabbedActivity extends BaseActivity {
     private ImageView buttonContacts;
     private ImageView imageNetworkStatus;
     private TextView toolbarPersona;
-    private ConnectionLiveData connectionLiveData;
-    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +59,19 @@ public class TabbedActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_tabbed);
-        Toolbar toolbar = findViewById(R.id.toolbar_tabbed);
+        final Toolbar toolbar = findViewById(R.id.toolbar_tabbed);
         setSupportActionBar(toolbar);
 
         thisIntent = getIntent();
 
-        viewModel = new ViewModelProvider(this).get(TabbedViewModel.class);
-        viewModel.setMainActivity(this);
-
-        ((TabbedViewModel)viewModel).getNotificationMessage().observe(this, msg -> {
-            if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-        });
+        Application application = getApplication();
+        MqttUseCase mqttUseCase = new MqttUseCase(
+                ((KeychainApp) application).getMqttRepository(),
+                "keychain-chat",
+                KeychainApp.GetInstance().getApplicationProperty(KeychainApp.PROPERTY_MQTT_CHANNEL_PAIRING),
+                KeychainApp.GetInstance().getApplicationProperty(KeychainApp.PROPERTY_MQTT_CHANNEL_CHATS)
+        );
+        viewModel = new ViewModelProvider(this, new TabbedViewModelFactory(application, mqttUseCase)).get(TabbedViewModel.class);
 
         viewModel.getActivePersona().observe(this, persona -> {
             try {
@@ -88,34 +91,12 @@ public class TabbedActivity extends BaseActivity {
         buttonContacts.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white, getTheme())));
         buttonSettings = findViewById(R.id.buttonSettings);
 
-        buttonConversation.setOnClickListener(v -> {
-            showConversationView();
-        });
-        buttonChats.setOnClickListener(v -> {
-            showChatsView();
-        });
-        buttonSettings.setOnClickListener(v -> {
-            if (!(getCurrentFragment() instanceof SettingFragment)) {
-                setCurrentFragment(new SettingFragment());
-                buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
-                buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                setLayout();
-            }
-        });
-        buttonContacts.setOnClickListener(v -> {
-            if (!(getCurrentFragment() instanceof ContactMainFragment)) {
-                setCurrentFragment(new ContactMainFragment());
-                buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-                buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
-                setLayout();
-            }
-        });
+//        buttonConversation.setOnClickListener(v -> showConversationView());
+        buttonChats.setOnClickListener(v -> showChatsView());
+        buttonSettings.setOnClickListener(v -> showSettingsView());
+        buttonContacts.setOnClickListener(v -> showContactsView());
 
-        connectionLiveData = new ConnectionLiveData(this);
+        ConnectionLiveData connectionLiveData = new ConnectionLiveData(this);
         connectionLiveData.observe(this, connectionStatus -> {
             @AttrRes int color;
             @DrawableRes int icon;
@@ -130,31 +111,58 @@ public class TabbedActivity extends BaseActivity {
             imageNetworkStatus.setImageDrawable(AppCompatResources.getDrawable(this, icon));
         });
 
+        String activePersonaUri;
         if (!thisIntent.hasExtra(EXTRAS_URI)) {
             Log.e(TAG, "Can't start TabbedActivity without URI in Intent!");
-            activePersonaUri = "";
-        } else {
-            activePersonaUri = thisIntent.getStringExtra(EXTRAS_URI);
+            return;
+        }
+
+        activePersonaUri = thisIntent.getStringExtra(EXTRAS_URI);
+        ((TabbedViewModel) viewModel).setChatPersona(activePersonaUri);
+    }
+
+    public void showContactsView() {
+        if (!(getCurrentFragment() instanceof ContactMainFragment)) {
+            setCurrentFragment(new ContactMainFragment());
+            buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
+            setLayout();
         }
     }
 
     public void showChatsView() {
         if (!(getCurrentFragment() instanceof ChatsFragment)) {
-            setCurrentFragment(new ChatsFragment());
+            setCurrentFragment(ChatsFragment.newInstance(((TabbedViewModel) viewModel).getActivePersonaUri()));
             buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
+            buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            setLayout();
+            ((TabbedViewModel) viewModel).refreshChats();
+        }
+    }
+
+    public void showConversationView(Chat chat) {
+        if (!(getCurrentFragment() instanceof ConversationFragment)) {
+            ArrayList<String> participants = new ArrayList<>(chat.participantIds);
+            setCurrentFragment(ConversationFragment.newInstance(participants));
+            ((TabbedViewModel) viewModel).setChat(chat);
+            buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
+            buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             setLayout();
         }
     }
 
-    public void showConversationView() {
-        if (!(getCurrentFragment() instanceof ConversationFragment)) {
-            setCurrentFragment(new ConversationFragment());
-            buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
+    public void showSettingsView() {
+        if (!(getCurrentFragment() instanceof SettingFragment)) {
+            setCurrentFragment(new SettingFragment());
+            buttonConversation.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             buttonChats.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
-            buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
+            buttonSettings.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorOnPrimary)));
             buttonContacts.setImageTintList(ColorStateList.valueOf(Utils.GetThemeColor(this, R.attr.colorPending)));
             setLayout();
         }
@@ -167,10 +175,10 @@ public class TabbedActivity extends BaseActivity {
     public void setCurrentFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        // if it's one of the 3 icons, save it so when we press 'back' we return to it
-        if (fragment instanceof ConversationFragment || fragment instanceof ContactMainFragment || fragment instanceof SettingFragment) {
-            currentFragment = fragment;
-        }
+//        // if it's one of the 3 icons, save it so when we press 'back' we return to it
+//        if (fragment instanceof ConversationFragment || fragment instanceof ContactMainFragment || fragment instanceof SettingFragment) {
+//            currentFragment = fragment;
+//        }
 
         fragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit();
         backPressed = false;
@@ -191,10 +199,12 @@ public class TabbedActivity extends BaseActivity {
     }
 
     private void setLayout() {
-        LinearLayout ll = findViewById(R.id.tabbedBottomNav);
+        final LinearLayout ll = findViewById(R.id.tabbedBottomNav);
         ll.setVisibility(View.VISIBLE);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        final ActionBar bar = getSupportActionBar();
+        if (bar == null) return;
+        bar.setDisplayHomeAsUpEnabled(false);
+        bar.setDisplayShowHomeEnabled(false);
     }
 
     @Override
@@ -207,13 +217,8 @@ public class TabbedActivity extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             finish();
             return true;
-        } else if (item.getItemId() == R.id.action_prefs && !(getCurrentFragment() instanceof PreferencesFragment)) {
-            LinearLayout ll = findViewById(R.id.tabbedBottomNav);
-            ll.setVisibility(View.GONE);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            setCurrentFragment(new PreferencesFragment());
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -223,16 +228,13 @@ public class TabbedActivity extends BaseActivity {
         super.onStart();
 
         Intent i = getIntent();
+        // check for EXTRAS_URI but don't set persona here
         if (i != null && i.hasExtra(EXTRAS_URI)) {
-            activePersonaUri = i.getStringExtra(EXTRAS_URI);
+            ((TabbedViewModel) viewModel).openMqttChannel();
         } else {
             Log.e(TAG, "We have no URI in TabbedActivity - make sure we have an active persona");
+            finishActivity(0);
         }
-
-        // try to set active persona now
-        viewModel.setActivePersona(activePersonaUri);
-
-        ((ChatViewModel)viewModel).openMqttChannel();
     }
 
     @Override
@@ -240,10 +242,8 @@ public class TabbedActivity extends BaseActivity {
         Log.d(TAG, "onResume()");
         super.onResume();
 
-        if (thisIntent != null) {
-            if (thisIntent.hasExtra(EXTRAS_URI)) {
-                activePersonaUri = thisIntent.getStringExtra(EXTRAS_URI);
-            }
+        if (thisIntent != null && thisIntent.hasExtra(EXTRAS_URI)) {
+            ((TabbedViewModel) viewModel).setChatPersona(thisIntent.getStringExtra(EXTRAS_URI));
         }
     }
 
@@ -266,8 +266,6 @@ public class TabbedActivity extends BaseActivity {
         if (cf == null || backPressed) {
             backPressed = false;
             super.onBackPressed();
-        } else if (cf instanceof PreferencesFragment) {
-            setCurrentFragment(currentFragment);
         } else {
             backPressed = true;
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();

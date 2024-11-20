@@ -1,13 +1,10 @@
 package io.keychain.mobile.util;
 
-import static io.keychain.common.Constants.ALL;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.icu.util.TimeZone;
 import android.os.Looper;
-import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
@@ -18,6 +15,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,13 +25,28 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import io.keychain.chat.models.chat.ChatMessage;
+import io.keychain.core.Facade;
 import io.keychain.core.PersonaStatus;
 
 public class Utils {
+    private static final String TAG = "Utils";
+    public static final String QR_ID = "id";
+    public static final String QR_NAME = "firstName";
+    public static final String QR_SUBNAME = "lastName";
 
     public static String SanitizeInput(String input) {
         return input.replaceAll("['\";:.,?+=\\-_()\\[\\]{}@#$%^&*!|\\\\ /<>~`]", "");
+    }
+
+    public static Bitmap GetQrCode(Facade facade, int width, int height) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(QR_ID, facade.getUri().toString());
+        jsonObject.put(QR_NAME, facade.getName());
+        jsonObject.put(QR_SUBNAME, facade.getSubName());
+        String qrJson = jsonObject.toString();
+
+        Log.i(TAG, "QR Code data: " + qrJson);
+        return GetQrCode(qrJson, width, height);
     }
 
     public static Bitmap GetQrCode(String data, int width, int height) throws Exception {
@@ -70,7 +84,7 @@ public class Utils {
         return os;
     }
 
-    public static String FormatTime(long duration) {
+    public static String FormatTimeAgo(long duration) {
         long secs_month = 2628000;
         long secs_week = 604800;
         long secs_day = 86400;
@@ -130,18 +144,12 @@ public class Utils {
         return PersonaStatus.NOSTATUS;
     }
 
-    public static boolean isAllChat(ChatMessage chatMessage) {
-        return chatMessage.receiverId.equals(ALL) || chatMessage.senderId.equals(ALL);
-    }
-
     public static LocalDateTime getDateTimeFromEpoc(long timestamp) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
-        return localDateTime;
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
     }
 
     public static long getLongFromDateTime(LocalDateTime localDateTime) {
         ZonedDateTime zdt = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-        long epoch = zdt.toInstant().toEpochMilli();
-        return epoch;
+        return zdt.toInstant().toEpochMilli();
     }
 }

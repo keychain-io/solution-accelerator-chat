@@ -19,12 +19,12 @@ public interface ChatRepository {
 
     Optional<User> getPlatformUser(String recordId);
 
-    Optional<User> getPlatformUser(String firstName, String lastName);
+    Optional<List<User>> getPlatformUser(String firstName, String lastName);
 
     Optional<User> getPlatformUserByUri(String uri);
 
     // Returns the record id
-    Optional<String> saveUserProfile(String firstName, String lastName, int status, String uri, Bitmap image);
+    Optional<String> saveUserProfile(String firstName, String lastName, int status, int source, String uri, Bitmap image);
 
     boolean updateUserProfile(String firstName, String lastName, int status, String uri);
 

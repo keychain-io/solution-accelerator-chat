@@ -8,11 +8,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import io.keychain.chat.viewmodel.KeychainViewModel;
+import io.keychain.mobile.viewmodel.KeychainViewModel;
 
 /**
  * Base activity for Keychain apps.
- *
+ * <p>
  * This activity forces a KeychainViewModel to be used, which may be overkill, but is one way to guarantee that
  * KeychainViewModel#startListeners() and KeychainViewModel#stopListeners() is used in #onResume and #onPause.
  * Failure to do that can cause issues with the repositories.

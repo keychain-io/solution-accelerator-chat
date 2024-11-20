@@ -9,10 +9,11 @@ import androidx.annotation.CallSuper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import io.keychain.chat.services.GatewayService;
+import io.keychain.mobile.services.GatewayService;
 
 /**
  * Use KeychainApplication, which listens to and tracks Activity lifecycle changes.
@@ -28,24 +29,27 @@ public class KeychainApplication extends Application {
     private Properties applicationProperties;
     private static KeychainApplication INSTANCE;
 
-    private GatewayService gatewayService;
+    private WeakReference<GatewayService> gatewayService = new WeakReference<>(null);
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate()");
         super.onCreate();
         loadProperties();
-
         INSTANCE = this;
-        gatewayService = new GatewayService(this);
 
         registerActivityLifecycleCallbacks(new AppLifecycleTracker() {
             @Override
-            public void onForeground() { KeychainApplication.this.onForeground(); }
+            public void onForeground() {
+                KeychainApplication.this.onForeground();
+            }
 
             @Override
-            public void onBackground() { KeychainApplication.this.onBackground();}
+            public void onBackground() {
+                KeychainApplication.this.onBackground();
+            }
         });
+
     }
 
     private void loadProperties() {
@@ -104,7 +108,10 @@ public class KeychainApplication extends Application {
         return INSTANCE.getApplicationContext();
     }
 
-    public GatewayService getGatewayService() { return gatewayService; }
+    public void setGatewayService(GatewayService service) {
+        gatewayService = new WeakReference<>(service);
+    }
+    public GatewayService getGatewayService() { return gatewayService.get(); }
 
     @Override
     public void onTerminate() {
@@ -115,12 +122,14 @@ public class KeychainApplication extends Application {
     @CallSuper
     protected void onForeground() {
         Log.d(TAG, "Application foregrounded");
-        gatewayService.startMonitor();
+        if (gatewayService.get() != null)
+            gatewayService.get().startMonitor();
     }
 
     @CallSuper
     protected void onBackground() {
         Log.d(TAG, "Application backgrounded");
-        gatewayService.stopMonitor();
+        if (gatewayService.get() != null)
+            gatewayService.get().stopMonitor();
     }
 }
