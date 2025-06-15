@@ -1,3 +1,4 @@
+**/keychain.cfg
 .cxx/
 .DS_Store
 keychain-sample-chat-android/.gradle/
